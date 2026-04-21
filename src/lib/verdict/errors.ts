@@ -1,10 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { ModelError } from "./model";
 
 export type VerdictErrorCode =
-  | "MISSING_IMAGE"
-  | "BAD_IMAGE_TYPE"
-  | "IMAGE_TOO_LARGE"
-  | "BAD_CONTEXT"
   | "MODEL_NO_TEXT"
   | "MODEL_BAD_JSON"
   | "MODEL_SCHEMA_FAIL"
@@ -23,6 +20,22 @@ export interface VerdictError {
 }
 
 export function toVerdictError(err: unknown): VerdictError {
+  if (err instanceof ModelError) {
+    const code: VerdictErrorCode =
+      err.code === "NO_TEXT"
+        ? "MODEL_NO_TEXT"
+        : err.code === "BAD_JSON"
+          ? "MODEL_BAD_JSON"
+          : "MODEL_SCHEMA_FAIL";
+    return {
+      code,
+      userMessage: "the model returned something weird. try again.",
+      logMessage: err.message,
+      status: 502,
+      details: err.details,
+    };
+  }
+
   if (err instanceof Anthropic.APIError) {
     if (err.status === 401) {
       return {
