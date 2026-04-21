@@ -6,25 +6,16 @@ export const alt = "Cosign verdict";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const STAMP_BG: Record<string, { bg: string; fg: string; border: string; label: string }> = {
-  COSIGNED: {
-    bg: "#BEF264",
-    fg: "#000",
-    border: "#000",
-    label: "COSIGNED",
-  },
-  NOT_COSIGNED: {
-    bg: "#EF4444",
-    fg: "#FFF",
-    border: "#FFF",
-    label: "NOT COSIGNED",
-  },
-  SLEEP_ON_IT: {
-    bg: "#FCD34D",
-    fg: "#000",
-    border: "#000",
-    label: "SLEEP ON IT",
-  },
+const PAPER = "#F4F1EA";
+const PAPER_TINT = "#EBE6D7";
+const INK = "#1C1917";
+const INK_MUTED = "#57534E";
+const INK_FADE = "#A8A29E";
+
+const STAMP: Record<string, { bg: string; fg: string; label: string }> = {
+  COSIGNED: { bg: "#2F7A3C", fg: PAPER, label: "COSIGNED" },
+  NOT_COSIGNED: { bg: "#B91C1C", fg: PAPER, label: "NOT COSIGNED" },
+  SLEEP_ON_IT: { bg: "#B45309", fg: PAPER, label: "SLEEP ON IT" },
 };
 
 function formatPriceCents(cents: number): string {
@@ -47,12 +38,12 @@ export default async function Image({ params }: { params: Promise<{ encoded: str
             width: "100%",
             height: "100%",
             display: "flex",
-            background: "#000",
-            color: "#fff",
+            background: PAPER,
+            color: INK,
             fontSize: 64,
             alignItems: "center",
             justifyContent: "center",
-            fontFamily: "monospace",
+            fontFamily: '"Courier New", monospace',
           }}
         >
           cosign · verdict not found
@@ -63,8 +54,10 @@ export default async function Image({ params }: { params: Promise<{ encoded: str
   }
 
   const { p: product, v: verdict } = payload;
-  const stamp = STAMP_BG[verdict.verdict];
+  const stamp = STAMP[verdict.verdict];
   const priceLine = `${product.source ? `${product.source} · ` : ""}${formatPriceCents(product.priceCents)}`;
+  const productName = product.name.length > 48 ? product.name.slice(0, 48) + "..." : product.name;
+  const headline = verdict.headline.length > 120 ? verdict.headline.slice(0, 120) + "..." : verdict.headline;
 
   return new ImageResponse(
     (
@@ -74,65 +67,63 @@ export default async function Image({ params }: { params: Promise<{ encoded: str
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          background: "#000",
-          color: "#FAFAFA",
+          background: PAPER,
+          color: INK,
           padding: 60,
-          fontFamily: '"Inter", "Segoe UI", sans-serif',
+          fontFamily: '"Georgia", "Times New Roman", serif',
           position: "relative",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div
             style={{
               display: "flex",
-              fontSize: 32,
-              fontFamily: "monospace",
-              fontWeight: 700,
+              fontSize: 40,
+              fontStyle: "italic",
+              fontFamily: '"Georgia", serif',
             }}
           >
             <span>cosign</span>
-            <span style={{ color: "#BEF264" }}>.</span>
+            <span style={{ color: "#B91C1C", fontStyle: "normal" }}>.</span>
           </div>
           <div
             style={{
               display: "flex",
-              fontSize: 18,
-              fontFamily: "monospace",
-              color: "#A1A1AA",
+              fontSize: 16,
+              fontFamily: '"Courier New", monospace',
+              color: INK_MUTED,
               textTransform: "uppercase",
-              letterSpacing: "0.15em",
+              letterSpacing: "0.2em",
             }}
           >
-            a verdict
+            a verdict from armaan
           </div>
         </div>
 
         <div
           style={{
             display: "flex",
+            background: PAPER_TINT,
+            border: `2px solid ${INK}20`,
+            marginTop: 30,
+            padding: 40,
             flex: 1,
-            marginTop: 40,
-            gap: 40,
+            gap: 36,
             position: "relative",
+            boxShadow: "3px 6px 0 rgba(28,25,23,0.12)",
           }}
         >
           <div
             style={{
               display: "flex",
-              width: 240,
-              height: 240,
-              background: "#18181B",
-              border: "2px solid #27272A",
+              width: 200,
+              height: 200,
+              background: PAPER,
+              border: `2px solid ${INK}25`,
               alignItems: "center",
               justifyContent: "center",
-              color: "#52525B",
-              fontFamily: "monospace",
+              color: INK_FADE,
+              fontFamily: '"Courier New", monospace',
               fontSize: 20,
               flexShrink: 0,
             }}
@@ -146,15 +137,15 @@ export default async function Image({ params }: { params: Promise<{ encoded: str
               flexDirection: "column",
               flex: 1,
               minWidth: 0,
-              paddingTop: 60,
+              paddingTop: 40,
             }}
           >
             <div
               style={{
                 display: "flex",
-                fontSize: 22,
-                fontFamily: "monospace",
-                color: "#A1A1AA",
+                fontSize: 20,
+                fontFamily: '"Courier New", monospace',
+                color: INK_MUTED,
               }}
             >
               {priceLine}
@@ -162,29 +153,27 @@ export default async function Image({ params }: { params: Promise<{ encoded: str
             <div
               style={{
                 display: "flex",
-                fontSize: 44,
-                fontWeight: 700,
-                marginTop: 8,
-                letterSpacing: "-0.03em",
-                lineHeight: 1.1,
+                fontSize: 52,
+                fontFamily: '"Georgia", serif',
+                marginTop: 6,
+                letterSpacing: "-0.015em",
+                lineHeight: 1,
               }}
             >
-              {product.name.length > 48
-                ? product.name.slice(0, 48) + "..."
-                : product.name}
+              {productName}
             </div>
             <div
               style={{
                 display: "flex",
-                fontSize: 36,
-                marginTop: 24,
-                color: "#F4F4F5",
-                lineHeight: 1.2,
+                fontSize: 34,
+                fontStyle: "italic",
+                fontFamily: '"Georgia", serif',
+                marginTop: 22,
+                color: INK,
+                lineHeight: 1.1,
               }}
             >
-              {verdict.headline.length > 120
-                ? verdict.headline.slice(0, 120) + "..."
-                : verdict.headline}
+              {headline}
             </div>
           </div>
 
@@ -192,18 +181,19 @@ export default async function Image({ params }: { params: Promise<{ encoded: str
             style={{
               display: "flex",
               position: "absolute",
-              top: -10,
-              right: -20,
+              top: -18,
+              right: -16,
               transform: "rotate(-4deg)",
               background: stamp.bg,
               color: stamp.fg,
-              border: `4px solid ${stamp.border}`,
+              border: `4px solid ${INK}`,
               padding: "18px 28px",
-              fontFamily: "monospace",
+              fontFamily: '"Courier New", monospace',
               fontWeight: 900,
-              fontSize: 48,
-              letterSpacing: "0.1em",
+              fontSize: 44,
+              letterSpacing: "0.12em",
               textTransform: "uppercase",
+              boxShadow: "3px 4px 0 rgba(28,25,23,0.3)",
             }}
           >
             {stamp.label}
@@ -215,22 +205,29 @@ export default async function Image({ params }: { params: Promise<{ encoded: str
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            borderTop: "1px solid #27272A",
-            paddingTop: 20,
-            marginTop: 20,
+            marginTop: 24,
           }}
         >
-          <div style={{ display: "flex", fontSize: 20, fontFamily: "monospace", color: "#A1A1AA" }}>
-            cosign.app
+          <div
+            style={{
+              display: "flex",
+              fontSize: 14,
+              fontFamily: '"Courier New", monospace',
+              color: INK_FADE,
+              textTransform: "uppercase",
+              letterSpacing: "0.2em",
+            }}
+          >
+            thank u for shopping honestly
           </div>
           <div
             style={{
               display: "flex",
-              fontSize: 20,
-              fontFamily: "monospace",
-              color: "#BEF264",
+              fontSize: 14,
+              fontFamily: '"Courier New", monospace',
+              color: "#B91C1C",
               textTransform: "uppercase",
-              letterSpacing: "0.15em",
+              letterSpacing: "0.2em",
             }}
           >
             get your own →

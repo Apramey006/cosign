@@ -4,15 +4,15 @@ import type { Verdict } from "@/lib/types";
 const VERDICT_STYLES: Record<Verdict, { label: string; className: string }> = {
   COSIGNED: {
     label: "COSIGNED",
-    className: "bg-lime-300 text-black border-black",
+    className: "bg-[#2f7a3c] text-[#f4f1ea] border-[#1c1917]",
   },
   NOT_COSIGNED: {
     label: "NOT COSIGNED",
-    className: "bg-red-500 text-white border-white",
+    className: "bg-[#b91c1c] text-[#f4f1ea] border-[#1c1917]",
   },
   SLEEP_ON_IT: {
     label: "SLEEP ON IT",
-    className: "bg-amber-300 text-black border-black",
+    className: "bg-[#b45309] text-[#f4f1ea] border-[#1c1917]",
   },
 };
 
@@ -42,7 +42,7 @@ export function VerdictStamp({
       role="img"
       aria-label={`verdict: ${style.label.toLowerCase()}`}
       className={cn(
-        "inline-flex items-center font-mono font-bold uppercase border-2 -rotate-2 select-none",
+        "inline-flex items-center font-receipt font-bold uppercase border-[3px] -rotate-3 select-none shadow-[2px_3px_0_rgba(28,25,23,0.25)]",
         sizeClass,
         style.className,
         className,

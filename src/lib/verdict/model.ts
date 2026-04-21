@@ -1,6 +1,6 @@
 import { Type } from "@google/genai";
 import { getGemini, PERSONA_MODEL } from "@/lib/gemini";
-import { BROKE_FRIEND_SYSTEM, buildUserContextPrompt, buildPastVerdictsPrompt } from "@/lib/prompts";
+import { ARMAAN_SYSTEM, buildUserContextPrompt, buildPastVerdictsPrompt } from "@/lib/prompts";
 import type { UserContext } from "@/lib/types";
 import {
   VerdictResponseSchema,
@@ -91,7 +91,7 @@ export async function callVerdictModel({
       },
     ],
     config: {
-      systemInstruction: BROKE_FRIEND_SYSTEM,
+      systemInstruction: ARMAAN_SYSTEM,
       responseMimeType: "application/json",
       responseSchema: GEMINI_RESPONSE_SCHEMA,
       maxOutputTokens: 1024,

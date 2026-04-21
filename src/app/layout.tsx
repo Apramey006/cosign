@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Geist, Instrument_Serif, Courier_Prime } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -7,21 +7,23 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
   subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const courierPrime = Courier_Prime({
+  variable: "--font-courier-prime",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Cosign — the AI broke-friend who vets your purchases",
+  title: "Cosign — meet Armaan, the stingy friend who vets your purchases",
   description:
-    "Upload a screenshot of anything you're about to buy. Get the honest verdict your group chat is too polite to give.",
+    "Upload a screenshot of anything you're about to buy. Armaan gives you the honest verdict your group chat is too polite to give.",
   manifest: "/manifest.json",
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
@@ -34,7 +36,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#f4f1ea",
   width: "device-width",
   initialScale: 1,
 };
@@ -45,9 +47,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} bg-black text-zinc-100 antialiased min-h-screen flex flex-col font-sans`}
+        className={`${geistSans.variable} ${instrumentSerif.variable} ${courierPrime.variable} bg-paper text-ink antialiased min-h-screen flex flex-col font-sans`}
       >
         {children}
       </body>

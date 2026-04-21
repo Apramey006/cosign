@@ -162,19 +162,19 @@ export default function CosignPage() {
   }, []);
 
   return (
-    <div className="flex-1 grain">
-      <header className="border-b border-zinc-800">
+    <div className="flex-1 paper">
+      <header className="border-b border-rule">
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link
             href="/"
-            className="font-mono text-lg font-bold tracking-tight focus:outline-none focus-visible:text-lime-300"
+            className="font-display italic text-2xl leading-none focus:outline-none focus-visible:text-stamp-red"
           >
-            cosign<span className="text-lime-300">.</span>
+            cosign<span className="text-stamp-red not-italic">.</span>
           </Link>
           <button
             type="button"
             onClick={() => setShowOnboarding(true)}
-            className="font-mono text-xs text-zinc-400 uppercase tracking-widest hover:text-lime-300 focus:outline-none focus-visible:text-lime-300 transition-colors"
+            className="font-receipt text-xs text-ink-muted uppercase tracking-widest hover:text-ink focus:outline-none focus-visible:text-ink transition-colors"
           >
             {context ? "edit context" : "set context"}
           </button>
@@ -196,8 +196,8 @@ export default function CosignPage() {
 
             {phase.kind === "preview" && (
               <section className="space-y-6">
-                <div className="border-2 border-zinc-800 bg-zinc-950 p-6">
-                  <p className="font-mono text-xs text-lime-300 uppercase tracking-widest mb-4">
+                <div className="bg-paper-tint border border-ink/20 p-6 shadow-[2px_4px_0_rgba(28,25,23,0.12)]">
+                  <p className="font-receipt text-xs text-stamp-red uppercase tracking-widest mb-4">
                     step 2 · confirm
                   </p>
                   <div className="flex items-start gap-4">
@@ -205,11 +205,11 @@ export default function CosignPage() {
                     <img
                       src={phase.preview}
                       alt="Preview"
-                      className="h-32 w-32 object-cover border border-zinc-800 bg-zinc-900"
+                      className="h-32 w-32 object-cover border-2 border-ink/20 bg-paper"
                     />
                     <div className="flex-1">
-                      <p className="text-zinc-200">ready to submit.</p>
-                      <p className="text-zinc-400 text-sm mt-1 font-mono">
+                      <p className="text-ink font-display text-xl">ready to submit.</p>
+                      <p className="text-ink-muted text-sm mt-1 font-receipt">
                         {phase.file.name} ·{" "}
                         {(phase.file.size / 1024).toFixed(0)} kb
                       </p>
@@ -220,14 +220,14 @@ export default function CosignPage() {
                   <button
                     type="button"
                     onClick={handleGetVerdict}
-                    className="flex-1 font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-6 py-4 hover:bg-lime-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-colors"
+                    className="flex-1 font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-6 py-4 hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors"
                   >
-                    get verdict →
+                    ask armaan →
                   </button>
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="font-mono uppercase tracking-wider text-zinc-300 px-6 py-4 border border-zinc-800 hover:border-zinc-600 focus:outline-none focus-visible:border-lime-300 transition-colors"
+                    className="font-receipt uppercase tracking-wider text-ink px-6 py-4 border border-ink/30 hover:border-ink focus:outline-none focus-visible:border-ink transition-colors"
                   >
                     change
                   </button>
@@ -248,19 +248,18 @@ export default function CosignPage() {
                   <ShareButton product={phase.product} verdict={phase.verdict} />
                 </div>
                 {phase.isFirst && !context && (
-                  <div className="border border-lime-300/30 bg-lime-300/5 p-5">
-                    <p className="font-mono text-xs text-lime-300 uppercase tracking-widest mb-2">
+                  <div className="border border-stamp-red/30 bg-stamp-red/5 p-5">
+                    <p className="font-receipt text-xs text-stamp-red uppercase tracking-widest mb-2">
                       want sharper roasts?
                     </p>
-                    <p className="text-zinc-200 mb-4">
-                      tell your broke friend a bit about you — budget, what
-                      you&apos;re saving for, recent regrets. next verdict will
-                      reference it.
+                    <p className="text-ink mb-4">
+                      tell armaan a bit about you — budget, what you&apos;re
+                      saving for, recent regrets. next verdict will reference it.
                     </p>
                     <button
                       type="button"
                       onClick={() => setShowOnboarding(true)}
-                      className="font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-5 py-3 hover:bg-lime-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-colors text-sm"
+                      className="font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-5 py-3 hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors text-sm"
                     >
                       set context →
                     </button>
@@ -269,7 +268,7 @@ export default function CosignPage() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="w-full font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-6 py-4 hover:bg-lime-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-colors"
+                  className="w-full font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-6 py-4 hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors"
                 >
                   get another verdict →
                 </button>
@@ -279,16 +278,16 @@ export default function CosignPage() {
             {phase.kind === "error" && (
               <div
                 role="alert"
-                className="border-2 border-red-900 bg-red-950/20 p-6"
+                className="border-2 border-stamp-red bg-stamp-red/5 p-6"
               >
-                <p className="font-mono text-xs text-red-400 uppercase tracking-widest mb-2">
+                <p className="font-receipt text-xs text-stamp-red uppercase tracking-widest mb-2">
                   error
                 </p>
-                <p className="text-zinc-100 mb-4">{phase.message}</p>
+                <p className="text-ink mb-4">{phase.message}</p>
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="font-mono uppercase tracking-wider text-zinc-100 px-4 py-2 border border-zinc-700 hover:border-zinc-500 focus:outline-none focus-visible:border-lime-300 transition-colors text-sm"
+                  className="font-receipt uppercase tracking-wider text-ink px-4 py-2 border border-ink/30 hover:border-ink focus:outline-none focus-visible:border-ink transition-colors text-sm"
                 >
                   try again
                 </button>
@@ -298,8 +297,8 @@ export default function CosignPage() {
         )}
 
         {hydrated && tab.length > 0 && phase.kind !== "verdict" && (
-          <section className="pt-8 border-t border-zinc-900">
-            <h2 className="font-mono text-xs text-zinc-400 uppercase tracking-widest mb-4">
+          <section className="pt-8 border-t border-rule">
+            <h2 className="font-receipt text-xs text-ink-muted uppercase tracking-widest mb-4">
               your tab · {tab.length}
             </h2>
             <TabList entries={tab} onUpdate={handleTabUpdate} />

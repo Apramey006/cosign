@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <rect width="256" height="256" rx="48" fill="#000"/>
-  <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="ui-monospace, monospace" font-weight="700" font-size="84" fill="#fff">c</text>
-  <circle cx="176" cy="176" r="14" fill="#bef264"/>
+  <rect width="256" height="256" rx="48" fill="#f4f1ea"/>
+  <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-weight="400" font-size="156" fill="#1c1917">c</text>
+  <circle cx="184" cy="176" r="14" fill="#b91c1c"/>
 </svg>

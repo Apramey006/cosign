@@ -39,18 +39,18 @@ export default async function SharedVerdictPage({ params }: { params: Params }) 
   const { p: product, v: verdict } = payload;
 
   return (
-    <div className="flex-1 grain">
-      <header className="border-b border-zinc-800">
+    <div className="flex-1 paper">
+      <header className="border-b border-rule">
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link
             href="/"
-            className="font-mono text-lg font-bold tracking-tight focus:outline-none focus-visible:text-lime-300"
+            className="font-display italic text-2xl leading-none focus:outline-none focus-visible:text-stamp-red"
           >
-            cosign<span className="text-lime-300">.</span>
+            cosign<span className="text-stamp-red not-italic">.</span>
           </Link>
           <Link
             href="/cosign"
-            className="font-mono text-xs uppercase tracking-widest text-zinc-300 hover:text-lime-300 focus:outline-none focus-visible:text-lime-300 transition-colors"
+            className="font-receipt text-xs uppercase tracking-widest text-ink-muted hover:text-ink focus:outline-none focus-visible:text-ink transition-colors"
           >
             get your own verdict →
           </Link>
@@ -58,61 +58,80 @@ export default async function SharedVerdictPage({ params }: { params: Params }) 
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-16 space-y-10">
-        <p className="font-mono text-xs text-zinc-400 uppercase tracking-widest">
-          a verdict from their broke friend
+        <p className="font-receipt text-xs text-ink-muted uppercase tracking-widest">
+          a verdict from armaan
         </p>
-        <div className="border-2 border-zinc-800 bg-zinc-950 p-8 md:p-14 relative">
-          <div className="absolute -top-8 -right-4 md:-top-10 md:-right-8">
-            <VerdictStamp verdict={verdict.verdict} size="xl" />
+        <div className="bg-paper-tint border border-ink/20 px-6 md:px-12 py-10 md:py-14 relative shadow-[2px_4px_0_rgba(28,25,23,0.12)]">
+          <div className="absolute top-4 right-4 md:-top-10 md:-right-8">
+            <VerdictStamp
+              verdict={verdict.verdict}
+              size="xl"
+              className="md:scale-100 scale-[0.65]"
+            />
           </div>
+
+          <div className="flex items-start justify-between mb-5 font-receipt text-xs text-ink-muted uppercase tracking-widest">
+            <span>armaan · cosign</span>
+            <span>shared verdict</span>
+          </div>
+
+          <div className="rule-dashed h-px mb-8" />
+
           <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
-            <div className="h-28 w-28 md:h-40 md:w-40 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 font-mono text-xs shrink-0">
+            <div className="h-28 w-28 md:h-40 md:w-40 bg-paper border-2 border-ink/20 flex items-center justify-center text-ink-fade font-receipt text-xs shrink-0">
               IMG
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-mono text-sm text-zinc-400">
+              <p className="font-receipt text-sm text-ink-muted">
                 {product.source ? `${product.source} · ` : ""}
                 {formatPrice(product.priceCents)}
               </p>
-              <h1 className="text-2xl md:text-3xl font-semibold mt-1 break-words font-display tracking-tight">
+              <h1 className="font-display text-3xl md:text-4xl mt-1 leading-none break-words">
                 {product.name}
               </h1>
-              <p className="mt-5 text-zinc-100 text-xl md:text-2xl leading-snug">
+              <p className="mt-5 text-2xl md:text-3xl font-display italic leading-tight">
                 {verdict.headline}
               </p>
-              <ul className="mt-5 space-y-2.5 text-zinc-300 font-mono text-sm md:text-base">
+              <ul className="mt-6 space-y-2.5 font-receipt text-sm md:text-base text-ink">
                 {verdict.reasons.map((r, i) => (
                   <li key={i} className="flex gap-3">
-                    <span className="text-lime-300 shrink-0">›</span>
+                    <span className="text-stamp-red shrink-0">›</span>
                     <span>{r}</span>
                   </li>
                 ))}
               </ul>
               {verdict.roast && (
-                <p className="mt-6 text-zinc-100 italic border-l-2 border-lime-300 pl-4">
+                <p className="mt-6 font-display italic text-xl border-l-2 border-stamp-red pl-4">
                   {verdict.roast}
                 </p>
               )}
             </div>
           </div>
+
+          <div className="rule-dashed h-px mt-10" />
+
+          <div className="flex items-center justify-between mt-4 font-receipt text-[10px] text-ink-fade uppercase tracking-widest">
+            <span>thank u for shopping honestly</span>
+            <span>·· armaan ··</span>
+          </div>
         </div>
 
-        <div className="border border-zinc-800 bg-zinc-950 p-6 text-center">
-          <p className="text-zinc-200 mb-4">
+        <div className="border border-ink/20 bg-paper-tint p-6 text-center">
+          <p className="text-ink mb-4">
             your friend is using cosign to roast (or bless) their purchases
             before the money leaves the account.
           </p>
           <Link
             href="/cosign"
-            className="inline-flex items-center justify-center font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-6 py-3 hover:bg-lime-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-colors text-sm"
+            className="inline-flex items-center justify-center font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-6 py-3 hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors text-sm"
           >
             get your own verdict →
           </Link>
         </div>
       </main>
 
-      <footer className="border-t border-zinc-900 mt-20">
-        <div className="max-w-3xl mx-auto px-6 py-8 text-xs font-mono text-zinc-500 text-center">
+      <footer className="border-t border-rule mt-20">
+        <div className="max-w-3xl mx-auto px-6 py-8 text-xs font-receipt text-ink-muted text-center">
           cosign · built by a broke college kid, for broke college kids
         </div>
       </footer>

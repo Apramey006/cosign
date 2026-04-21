@@ -31,24 +31,26 @@ export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps)
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-2 border-zinc-800 bg-zinc-950 p-6 md:p-8 space-y-6"
+      className="bg-paper-tint border border-ink/20 px-6 md:px-10 py-8 md:py-10 space-y-6 shadow-[2px_4px_0_rgba(28,25,23,0.12)]"
     >
       <div>
-        <p className="font-mono text-xs text-lime-300 uppercase tracking-widest mb-2">
-          quick context
+        <p className="font-receipt text-xs text-stamp-red uppercase tracking-widest mb-2">
+          tell armaan about you
         </p>
-        <h2 className="text-xl font-semibold">
-          so your broke friend knows who they&apos;re talking to
+        <h2 className="font-display text-3xl md:text-4xl leading-none">
+          so he&apos;s roasting the right person
         </h2>
-        <p className="text-zinc-500 text-sm mt-2">
-          all optional. skip any of these. saved only in your browser.
+        <p className="text-ink-muted text-sm mt-3 font-receipt">
+          all optional. saved only in your browser.
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="rule-dashed h-px" />
+
+      <div className="space-y-5">
         <div>
           <label
-            className="block font-mono text-xs text-zinc-400 uppercase tracking-widest mb-2"
+            className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
             htmlFor="budget"
           >
             weekly discretionary $
@@ -62,13 +64,13 @@ export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps)
             value={budget}
             onChange={(e) => setBudget(e.target.value)}
             placeholder="e.g. 80"
-            className="w-full bg-black border border-zinc-800 focus:border-lime-300 px-4 py-3 text-zinc-100 outline-none font-mono"
+            className="w-full bg-paper border-2 border-ink/20 focus:border-ink focus:outline-none px-4 py-3 text-ink font-receipt"
           />
         </div>
 
         <div>
           <label
-            className="block font-mono text-xs text-zinc-400 uppercase tracking-widest mb-2"
+            className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
             htmlFor="goal"
           >
             top thing you&apos;re saving for
@@ -80,13 +82,13 @@ export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps)
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
             placeholder="e.g. coachella in april"
-            className="w-full bg-black border border-zinc-800 focus:border-lime-300 px-4 py-3 text-zinc-100 outline-none"
+            className="w-full bg-paper border-2 border-ink/20 focus:border-ink focus:outline-none px-4 py-3 text-ink"
           />
         </div>
 
         <div>
           <label
-            className="block font-mono text-xs text-zinc-400 uppercase tracking-widest mb-2"
+            className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
             htmlFor="regret"
           >
             most recent purchase you regret
@@ -98,7 +100,7 @@ export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps)
             value={regret}
             onChange={(e) => setRegret(e.target.value)}
             placeholder="e.g. another productivity journal"
-            className="w-full bg-black border border-zinc-800 focus:border-lime-300 px-4 py-3 text-zinc-100 outline-none"
+            className="w-full bg-paper border-2 border-ink/20 focus:border-ink focus:outline-none px-4 py-3 text-ink"
           />
         </div>
       </div>
@@ -106,7 +108,7 @@ export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps)
       <div className="flex gap-3 pt-2">
         <button
           type="submit"
-          className="flex-1 font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-6 py-3 hover:bg-lime-200 transition-colors"
+          className="flex-1 font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-6 py-3 hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors"
         >
           save & continue
         </button>
@@ -114,7 +116,7 @@ export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps)
           <button
             type="button"
             onClick={onSkip}
-            className="font-mono uppercase tracking-wider text-zinc-500 px-6 py-3 border border-zinc-800 hover:border-zinc-600 hover:text-zinc-300 transition-colors"
+            className="font-receipt uppercase tracking-wider text-ink-muted px-6 py-3 border border-ink/30 hover:border-ink hover:text-ink focus:outline-none focus-visible:border-ink transition-colors"
           >
             skip
           </button>
