@@ -12,5 +12,4 @@ export function getAnthropic(): Anthropic {
   return client;
 }
 
-export const VISION_MODEL = "claude-sonnet-4-5";
 export const PERSONA_MODEL = "claude-sonnet-4-5";

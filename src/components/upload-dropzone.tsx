@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_BYTES } from "@/lib/verdict/schema";
 
 interface UploadDropzoneProps {
   onFile: (file: File) => void;
@@ -14,8 +15,10 @@ export function UploadDropzone({ onFile, disabled }: UploadDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const validate = useCallback((file: File): string | null => {
-    if (!file.type.startsWith("image/")) return "upload an image file";
-    if (file.size > 8 * 1024 * 1024) return "image must be under 8MB";
+    if (!(ALLOWED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
+      return "upload png, jpg, webp, or gif";
+    }
+    if (file.size > MAX_IMAGE_BYTES) return "image must be under 8MB";
     return null;
   }, []);
 
@@ -59,25 +62,26 @@ export function UploadDropzone({ onFile, disabled }: UploadDropzoneProps) {
         }}
         className={cn(
           "border-2 border-dashed p-12 md:p-16 text-center cursor-pointer transition-colors select-none",
+          "focus:outline-none focus-visible:border-lime-300 focus-visible:ring-2 focus-visible:ring-lime-300/40",
           dragging
             ? "border-lime-300 bg-lime-300/5"
-            : "border-zinc-800 hover:border-zinc-700",
+            : "border-zinc-800 hover:border-zinc-600",
           disabled && "opacity-50 cursor-not-allowed",
         )}
       >
-        <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest mb-4">
+        <p className="font-mono text-xs text-zinc-400 uppercase tracking-widest mb-4">
           step 1 · screenshot
         </p>
-        <p className="text-zinc-200 text-lg md:text-xl mb-3">
+        <p className="text-zinc-100 text-lg md:text-xl mb-3">
           drop a screenshot — or click to pick one
         </p>
-        <p className="text-zinc-600 text-sm max-w-md mx-auto">
-          anything: amazon, tiktok shop, depop, an ig ad. png/jpg/webp · up to 8mb
+        <p className="text-zinc-400 text-sm max-w-md mx-auto">
+          anything: amazon, tiktok shop, depop, an ig ad. png / jpg / webp / gif · up to 8mb
         </p>
         <input
           ref={inputRef}
           type="file"
-          accept="image/*"
+          accept="image/png,image/jpeg,image/webp,image/gif"
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];
@@ -88,7 +92,9 @@ export function UploadDropzone({ onFile, disabled }: UploadDropzoneProps) {
         />
       </div>
       {error && (
-        <p className="mt-3 font-mono text-sm text-red-400">{error}</p>
+        <p className="mt-3 font-mono text-sm text-red-400" role="alert">
+          {error}
+        </p>
       )}
     </div>
   );

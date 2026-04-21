@@ -17,13 +17,16 @@ export default function Home() {
               cosign<span className="text-lime-300">.</span>
             </span>
           </div>
-          <nav className="flex items-center gap-6 text-sm text-zinc-400 font-mono">
-            <Link href="/cosign" className="hover:text-lime-300 transition-colors">
+          <nav className="flex items-center gap-6 text-sm text-zinc-300 font-mono">
+            <Link
+              href="/cosign"
+              className="hover:text-lime-300 focus:outline-none focus-visible:text-lime-300 transition-colors"
+            >
               try it
             </Link>
             <Link
               href="https://github.com/Apramey006/cosign"
-              className="hover:text-lime-300 transition-colors"
+              className="hover:text-lime-300 focus:outline-none focus-visible:text-lime-300 transition-colors"
               target="_blank"
             >
               github
@@ -35,16 +38,16 @@ export default function Home() {
       <main className="max-w-5xl mx-auto px-6 py-20 md:py-32">
         <section className="space-y-10">
           <div className="space-y-6 max-w-3xl">
-            <div className="inline-flex items-center gap-2 font-mono text-xs text-zinc-500 uppercase tracking-widest border border-zinc-800 px-3 py-1.5 rounded-full">
+            <div className="inline-flex items-center gap-2 font-mono text-xs text-zinc-300 uppercase tracking-widest border border-zinc-700 px-3 py-1.5 rounded-full">
               <span className="h-1.5 w-1.5 rounded-full bg-lime-300 animate-pulse" />
               broke-friend energy, on demand
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.05]">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-[-0.04em] leading-[1.02] font-display">
               you need a <span className="text-lime-300">cosigner</span>
               <br />
               for that purchase.
             </h1>
-            <p className="text-xl md:text-2xl text-zinc-400 max-w-2xl leading-relaxed">
+            <p className="text-xl md:text-2xl text-zinc-300 max-w-2xl leading-relaxed">
               upload a screenshot of anything you&apos;re about to buy. get the
               honest verdict your group chat is too polite to give.
             </p>
@@ -53,13 +56,13 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Link
               href="/cosign"
-              className="inline-flex items-center justify-center font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-8 py-4 hover:bg-lime-200 transition-colors"
+              className="inline-flex items-center justify-center font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-8 py-4 hover:bg-lime-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-colors"
             >
               get a verdict →
             </Link>
             <Link
               href="#how"
-              className="inline-flex items-center justify-center font-mono uppercase tracking-wider text-zinc-400 px-8 py-4 border border-zinc-800 hover:border-lime-300 hover:text-lime-300 transition-colors"
+              className="inline-flex items-center justify-center font-mono uppercase tracking-wider text-zinc-300 px-8 py-4 border border-zinc-700 hover:border-lime-300 hover:text-lime-300 focus:outline-none focus-visible:border-lime-300 focus-visible:text-lime-300 transition-colors"
             >
               how it works
             </Link>
@@ -67,28 +70,28 @@ export default function Home() {
         </section>
 
         <section className="mt-28 md:mt-40">
-          <div className="border-2 border-zinc-800 bg-zinc-950 p-6 md:p-10 max-w-3xl relative">
-            <div className="absolute -top-5 -right-4">
-              <VerdictStamp verdict="NOT_COSIGNED" size="lg" />
+          <div className="border-2 border-zinc-800 bg-zinc-950 p-8 md:p-14 max-w-3xl relative">
+            <div className="absolute -top-8 -right-4 md:-top-10 md:-right-8">
+              <VerdictStamp verdict="NOT_COSIGNED" size="xl" />
             </div>
-            <p className="font-mono text-xs text-zinc-500 uppercase tracking-widest mb-4">
+            <p className="font-mono text-xs text-zinc-400 uppercase tracking-widest mb-6">
               example verdict
             </p>
-            <div className="flex items-start gap-4 md:gap-6">
-              <div className="h-20 w-20 md:h-28 md:w-28 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 font-mono text-xs shrink-0">
+            <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
+              <div className="h-28 w-28 md:h-40 md:w-40 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 font-mono text-xs shrink-0">
                 IMG
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-mono text-sm text-zinc-500">
+                <p className="font-mono text-sm text-zinc-400">
                   amazon.com · $84
                 </p>
-                <h3 className="text-xl md:text-2xl font-semibold mt-1">
+                <h3 className="text-2xl md:text-3xl font-semibold mt-1 font-display tracking-tight">
                   ergonomic mesh office chair (viral tiktok listing)
                 </h3>
-                <p className="mt-4 text-zinc-300 text-lg leading-snug">
+                <p className="mt-5 text-zinc-100 text-xl md:text-2xl leading-snug">
                   bro. no.
                 </p>
-                <ul className="mt-4 space-y-2 text-zinc-400 font-mono text-sm">
+                <ul className="mt-5 space-y-2.5 text-zinc-300 font-mono text-sm md:text-base">
                   {SAMPLE_REASONS.map((r, i) => (
                     <li key={i} className="flex gap-3">
                       <span className="text-lime-300">›</span>
@@ -102,7 +105,7 @@ export default function Home() {
         </section>
 
         <section id="how" className="mt-28 md:mt-40">
-          <h2 className="font-mono text-sm text-zinc-500 uppercase tracking-widest mb-10">
+          <h2 className="font-mono text-sm text-zinc-400 uppercase tracking-widest mb-10">
             how it works
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -130,15 +133,17 @@ export default function Home() {
                 <p className="font-mono text-xs text-lime-300 mb-2">
                   {step.n}
                 </p>
-                <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                <p className="text-zinc-400 leading-relaxed">{step.body}</p>
+                <h3 className="text-xl font-semibold mb-2 font-display tracking-tight">
+                  {step.title}
+                </h3>
+                <p className="text-zinc-300 leading-relaxed">{step.body}</p>
               </div>
             ))}
           </div>
         </section>
 
         <section className="mt-28 md:mt-40">
-          <h2 className="font-mono text-sm text-zinc-500 uppercase tracking-widest mb-10">
+          <h2 className="font-mono text-sm text-zinc-400 uppercase tracking-widest mb-10">
             why it isn&apos;t just chatgpt for shopping
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
@@ -167,7 +172,7 @@ export default function Home() {
                 <h3 className="font-mono text-sm uppercase tracking-wider text-lime-300 mb-3">
                   {title}
                 </h3>
-                <p className="text-zinc-300 leading-relaxed">{body}</p>
+                <p className="text-zinc-200 leading-relaxed">{body}</p>
               </div>
             ))}
           </div>
@@ -176,20 +181,20 @@ export default function Home() {
         <section className="mt-32 pb-10 text-center">
           <Link
             href="/cosign"
-            className="inline-flex items-center justify-center font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-10 py-5 text-lg hover:bg-lime-200 transition-colors"
+            className="inline-flex items-center justify-center font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-10 py-5 text-lg hover:bg-lime-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-colors"
           >
             get your first verdict →
           </Link>
-          <p className="mt-6 text-xs text-zinc-600 font-mono">
+          <p className="mt-6 text-xs text-zinc-400 font-mono">
             free while in beta · no signup for the first verdict
           </p>
         </section>
       </main>
 
       <footer className="border-t border-zinc-900 mt-20">
-        <div className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-xs font-mono text-zinc-600">
+        <div className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-xs font-mono text-zinc-500">
           <span>cosign · built by a broke college kid, for broke college kids</span>
-          <span>v0.1 · scaffold</span>
+          <span>v0.3 · round 1 feedback</span>
         </div>
       </footer>
     </div>
