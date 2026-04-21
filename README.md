@@ -19,7 +19,7 @@ Four mechanics make cosign structurally different from a 10-second ChatGPT promp
 
 ## Live demo
 
-Deploy your own in ~5 minutes — see [`DEPLOY.md`](./DEPLOY.md). Needs a free Anthropic API key and a Vercel account.
+Deploy your own in ~5 minutes — see [`DEPLOY.md`](./DEPLOY.md). Needs a free Gemini API key (no credit card) and a Vercel account.
 
 ## The iteration trail
 
@@ -28,7 +28,7 @@ This repo is also a portfolio project — five PRs, each reviewed by a different
 | PR | What shipped |
 |---|---|
 | [#1](https://github.com/Apramey006/cosign/pull/1) | Scaffold + branded landing page |
-| [#2](https://github.com/Apramey006/cosign/pull/2) | Working v1 — screenshot → Claude Vision → verdict |
+| [#2](https://github.com/Apramey006/cosign/pull/2) | Working v1 — screenshot → Gemini vision → verdict |
 | [#3](https://github.com/Apramey006/cosign/pull/3) | Round 1 feedback: memory loop, hero reveal, bug fixes, a11y |
 | [#4](https://github.com/Apramey006/cosign/pull/4) | Round 2 feedback: share URLs, OG cards, rate limiting, prompt injection defense |
 | [#5](https://github.com/Apramey006/cosign/pull/5) | Final polish: tests, CI, docs |
@@ -37,7 +37,7 @@ This repo is also a portfolio project — five PRs, each reviewed by a different
 
 - **Next.js 16** (App Router, Turbopack) + React 19
 - **TypeScript** + **Tailwind v4** + Space Grotesk / Geist fonts
-- **Anthropic Claude Sonnet 4.5** — single call does vision extraction + persona verdict
+- **Google Gemini 2.5 Flash** (free tier via Google AI Studio) — single call does vision extraction + persona verdict, structured output via `responseSchema`
 - **Zod** — validates both user input AND the model's JSON response
 - **Vitest** — 26 tests covering share encoding, rate-limit isolation, error mapping, prompt sanitization
 - **GitHub Actions** — lint + typecheck + test + build on every PR
@@ -57,7 +57,7 @@ src/
 ├── lib/
 │   ├── verdict/
 │   │   ├── schema.ts               # zod schemas + allowed image types
-│   │   ├── model.ts                # Anthropic call + JSON validation
+│   │   ├── model.ts                # Gemini call + JSON validation
 │   │   └── errors.ts               # typed VerdictError union + APIError branching
 │   ├── prompts.ts                  # broke-friend system prompt + XML-wrapped user data
 │   ├── rate-limit.ts               # in-memory LRU, 10 req/min/IP
@@ -77,9 +77,11 @@ src/
 
 ```bash
 pnpm install
-cp .env.example .env.local          # fill in ANTHROPIC_API_KEY
+cp .env.example .env.local          # fill in GEMINI_API_KEY
 pnpm dev                            # http://localhost:3000
 ```
+
+Grab a Gemini API key at https://aistudio.google.com/app/apikey — free tier, no credit card.
 
 ### Scripts
 
@@ -95,7 +97,7 @@ pnpm dev                            # http://localhost:3000
 - **Rate limiting:** in-memory LRU on `/api/verdict`, 10 req/min per IP. In a multi-instance Vercel deploy, upgrade to Upstash Redis for shared state (documented in `lib/rate-limit.ts`).
 - **Prompt injection:** user-controlled strings (past verdicts, saving goals, regrets) are sanitized (no newlines / backticks / angle brackets), length-capped, and wrapped in `<past_verdicts>` / `<user_context>` XML tags. System prompt explicitly treats tag contents as data.
 - **Image upload validation:** strict MIME allowlist (png/jpg/webp/gif), 8MB cap, multipart only.
-- **Error sanitization:** upstream Anthropic error messages never reach the client. `toVerdictError` produces user-safe messages while logging the real error server-side.
+- **Error sanitization:** upstream Gemini error messages never reach the client. `toVerdictError` produces user-safe messages while logging the real error server-side.
 
 ## What's next
 

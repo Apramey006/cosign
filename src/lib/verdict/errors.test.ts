@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import Anthropic from "@anthropic-ai/sdk";
+import { ApiError } from "@google/genai";
 import { toVerdictError } from "./errors";
 import { ModelError } from "./model";
 
@@ -18,25 +18,38 @@ describe("toVerdictError", () => {
     expect(ve.details).toEqual({ raw: "not json" });
   });
 
-  it("maps Anthropic 401 → UPSTREAM_AUTH / 500", () => {
-    const err = new Anthropic.APIError(401, { type: "error" }, "bad key", new Headers());
+  it("maps Gemini 401 → UPSTREAM_AUTH / 500", () => {
+    const err = new ApiError({ status: 401, message: "bad key" });
     const ve = toVerdictError(err);
     expect(ve.code).toBe("UPSTREAM_AUTH");
     expect(ve.status).toBe(500);
   });
 
-  it("maps Anthropic 429 → UPSTREAM_RATE_LIMIT / 429", () => {
-    const err = new Anthropic.APIError(429, { type: "error" }, "slow down", new Headers());
+  it("maps Gemini 403 → UPSTREAM_AUTH / 500", () => {
+    const err = new ApiError({ status: 403, message: "forbidden" });
+    const ve = toVerdictError(err);
+    expect(ve.code).toBe("UPSTREAM_AUTH");
+    expect(ve.status).toBe(500);
+  });
+
+  it("maps Gemini 429 → UPSTREAM_RATE_LIMIT / 429", () => {
+    const err = new ApiError({ status: 429, message: "slow down" });
     const ve = toVerdictError(err);
     expect(ve.code).toBe("UPSTREAM_RATE_LIMIT");
     expect(ve.status).toBe(429);
   });
 
-  it("maps Anthropic 503 → UPSTREAM_OTHER / 502", () => {
-    const err = new Anthropic.APIError(503, { type: "error" }, "down", new Headers());
+  it("maps Gemini 503 → UPSTREAM_OTHER / 502", () => {
+    const err = new ApiError({ status: 503, message: "down" });
     const ve = toVerdictError(err);
     expect(ve.code).toBe("UPSTREAM_OTHER");
     expect(ve.status).toBe(502);
+  });
+
+  it("recognizes duck-typed status on plain errors too", () => {
+    const err = Object.assign(new Error("oops"), { status: 429 });
+    const ve = toVerdictError(err);
+    expect(ve.code).toBe("UPSTREAM_RATE_LIMIT");
   });
 
   it("maps unknown errors to UNKNOWN / 500", () => {
@@ -46,13 +59,17 @@ describe("toVerdictError", () => {
   });
 
   it("surfaces user-safe messages only", () => {
-    const err = new Anthropic.APIError(
-      401,
-      { type: "error" },
-      "sk-ant-key-leaked-here-invalid",
-      new Headers(),
-    );
+    const err = new ApiError({
+      status: 401,
+      message: "AIzaSy-leaked-key-here-invalid",
+    });
     const ve = toVerdictError(err);
-    expect(ve.userMessage).not.toContain("sk-ant");
+    expect(ve.userMessage).not.toContain("AIzaSy");
+  });
+
+  it("maps timeout-like errors to UPSTREAM_TIMEOUT / 504", () => {
+    const ve = toVerdictError(new Error("request ETIMEDOUT"));
+    expect(ve.code).toBe("UPSTREAM_TIMEOUT");
+    expect(ve.status).toBe(504);
   });
 });
