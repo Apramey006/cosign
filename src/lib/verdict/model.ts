@@ -94,7 +94,7 @@ export async function callVerdictModel({
       systemInstruction: BROKE_FRIEND_SYSTEM,
       responseMimeType: "application/json",
       responseSchema: GEMINI_RESPONSE_SCHEMA,
-      maxOutputTokens: 2048,
+      maxOutputTokens: 1024,
       temperature: 0.95,
     },
   });

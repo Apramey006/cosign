@@ -12,4 +12,4 @@ export function getGemini(): GoogleGenAI {
   return client;
 }
 
-export const PERSONA_MODEL = "gemini-2.5-flash";
+export const PERSONA_MODEL = "gemini-2.5-flash-lite";
