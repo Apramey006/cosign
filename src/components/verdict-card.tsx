@@ -21,9 +21,9 @@ export function VerdictCard({ product, verdict, imagePreview }: VerdictCardProps
   }, [revealed, verdict.reasons.length]);
 
   return (
-    <div className="border-2 border-zinc-800 bg-zinc-950 p-8 md:p-14 relative animate-in fade-in duration-500">
-      <div className="absolute -top-8 -right-4 md:-top-10 md:-right-8 animate-stamp">
-        <VerdictStamp verdict={verdict.verdict} size="xl" />
+    <div className="border-2 border-zinc-800 bg-zinc-950 pt-16 md:pt-10 pb-8 md:pb-14 px-8 md:px-14 relative animate-in fade-in duration-500">
+      <div className="absolute top-4 right-4 md:-top-10 md:-right-8 animate-stamp origin-top-right">
+        <VerdictStamp verdict={verdict.verdict} size="xl" className="md:scale-100 scale-[0.65]" />
       </div>
 
       <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
