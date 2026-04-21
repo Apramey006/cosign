@@ -8,6 +8,7 @@ import { OnboardingForm } from "@/components/onboarding-form";
 import { TabList } from "@/components/tab-list";
 import { LoadingThoughts } from "@/components/loading-thoughts";
 import { ShareButton } from "@/components/share-button";
+import { ChatThread } from "@/components/chat-thread";
 import {
   addToTab,
   loadContext,
@@ -243,6 +244,12 @@ export default function CosignPage() {
                   product={phase.product}
                   verdict={phase.verdict}
                   imagePreview={phase.preview}
+                />
+                <ChatThread
+                  product={phase.product}
+                  verdict={phase.verdict}
+                  userContext={context}
+                  pastVerdicts={tabEntriesToPast(tab.slice(1))}
                 />
                 <div className="flex gap-3">
                   <ShareButton product={phase.product} verdict={phase.verdict} />
