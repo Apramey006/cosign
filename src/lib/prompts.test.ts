@@ -9,13 +9,27 @@ describe("ARMAAN_SYSTEM prompt", () => {
     expect(ARMAAN_SYSTEM).toContain("<past_verdict>");
     expect(ARMAAN_SYSTEM).toContain("<user_context>");
   });
+  it("bans SLEEP_ON_IT as a safety valve for missing context", () => {
+    // the whole reason for this rule — the model was punting too often
+    expect(ARMAAN_SYSTEM).toMatch(/safety valve|cop-out|never punt/i);
+  });
+  it("gives category priors so missing context still yields a real verdict", () => {
+    expect(ARMAAN_SYSTEM).toMatch(/tiktok shop/i);
+    expect(ARMAAN_SYSTEM).toMatch(/textbook|staple/i);
+  });
+  it("provides explicit distribution guidance away from 33/33/33", () => {
+    expect(ARMAAN_SYSTEM).toMatch(/45%|~45/);
+    expect(ARMAAN_SYSTEM).toMatch(/35%|~35/);
+    expect(ARMAAN_SYSTEM).toMatch(/20%|~20/);
+  });
 });
 
 describe("buildUserContextPrompt", () => {
-  it("returns first-verdict message when ctx is null", () => {
+  it("tells the model NOT to punt to SLEEP_ON_IT when ctx is null", () => {
     const out = buildUserContextPrompt(null);
-    expect(out).toContain("first verdict");
-    expect(out).toMatch(/<user_context>/);
+    expect(out).toContain("<user_context>");
+    expect(out).toMatch(/SLEEP_ON_IT/);
+    expect(out).toMatch(/cop-out|do NOT default/);
   });
 
   it("sanitizes newlines, backticks, angle brackets from user strings", () => {
