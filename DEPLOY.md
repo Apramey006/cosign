@@ -1,27 +1,26 @@
 # Deploy cosign
 
-You'll have this live at a real URL (`cosign.vercel.app` or similar) in ~5 minutes. Free tier, no credit card needed.
+You'll have this live at a real URL (`cosign.vercel.app` or similar) in ~5 minutes. **Free tier, no credit card needed anywhere.**
 
-## 1. Get an Anthropic API key
+## 1. Get a Gemini API key (free, no card)
 
-1. Go to https://console.anthropic.com
-2. Sign in (Google works)
-3. Go to **Settings → API Keys** → **Create Key**
-4. Copy the key (starts with `sk-ant-...`)
-5. Add $5 in credits under **Settings → Billing**. That's ~500 verdicts.
+1. Go to https://aistudio.google.com/app/apikey
+2. Sign in with any Google account
+3. Click **Create API key**
+4. Copy the key (starts with `AIza...`)
 
-> **Note:** if you want to stay free-tier forever, swap `claude-sonnet-4-5` for `claude-haiku-4-5` in `src/lib/anthropic.ts`. Haiku is cheaper and nearly as good for this task.
+> **Free tier limits on `gemini-2.5-flash`:** 15 requests/minute, 1,500 requests/day, 1M tokens/minute. Plenty for a personal demo and small beta.
 
 ## 2. Deploy to Vercel
 
 ### Option A — one-click (easiest)
 
-1. Click the Vercel deploy button below (after you push this repo to your GitHub):
+1. Click the deploy button:
 
    [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FApramey006%2Fcosign)
 
 2. Vercel will prompt you for environment variables. Add:
-   - `ANTHROPIC_API_KEY` — the key you copied above
+   - `GEMINI_API_KEY` — the key you copied above
 
 3. Click **Deploy**. Takes ~60 seconds.
 
@@ -31,7 +30,7 @@ You'll have this live at a real URL (`cosign.vercel.app` or similar) in ~5 minut
 pnpm install -g vercel
 cd ~/projects/cosign
 vercel                   # follow prompts, link to your account
-vercel env add ANTHROPIC_API_KEY production
+vercel env add GEMINI_API_KEY production
 vercel --prod            # deploy
 ```
 
@@ -53,10 +52,10 @@ vercel --prod            # deploy
 ## Troubleshooting
 
 **"server misconfigured" error on verdict**
-Your `ANTHROPIC_API_KEY` isn't set in Vercel env vars, or has no credits. Check **Settings → Environment Variables** in the Vercel project.
+Your `GEMINI_API_KEY` isn't set in Vercel env vars. Check **Settings → Environment Variables** in the Vercel project.
 
-**Rate limit hit immediately**
-The in-memory rate limit resets on every serverless invocation — shouldn't trip under normal use. If it does, you may have hit Anthropic's upstream rate limit.
+**"too many verdicts right now" when you've barely used it**
+You may have hit Gemini's free tier per-minute rate limit (15 rpm). Wait 60s and try again. If it keeps happening, upgrade to paid in Google AI Studio (still dirt cheap) or swap to `gemini-2.5-flash-lite` in `src/lib/gemini.ts`.
 
 **OG image not showing on iMessage / Twitter**
 iMessage caches OG cards aggressively. Try a fresh URL (re-share). Twitter sometimes takes a minute to index new OG cards.
@@ -66,3 +65,4 @@ iMessage caches OG cards aggressively. Try a fresh URL (re-share). Twitter somet
 - **Multi-instance rate limit** — swap `lib/rate-limit.ts` for `@upstash/ratelimit` + Upstash Redis (free tier, 10k req/day)
 - **Real persistence** — add Supabase (auth + Postgres) when you want cross-device tabs. The data model is already in `lib/types.ts` (`TabEntry`)
 - **Email regret pings** — add Resend (3k emails/mo free) + a scheduled Vercel Cron to fire at 30/90/180 days after `purchased=true`
+- **Swap model for free-er tier** — `gemini-2.5-flash-lite` is 10x cheaper if you blow past the free tier
