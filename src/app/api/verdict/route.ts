@@ -8,13 +8,29 @@ import {
   isAllowedImageType,
   type PastVerdict,
 } from "@/lib/verdict/schema";
-import { callVerdictModel, ModelError } from "@/lib/verdict/model";
+import { callVerdictModel } from "@/lib/verdict/model";
 import { toVerdictError } from "@/lib/verdict/errors";
+import { checkRateLimit, clientKeyFromRequest } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
+  const rate = checkRateLimit(clientKeyFromRequest(req));
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: "too many verdicts right now. give it a minute." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rate.retryAfterSec ?? 60),
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(Math.floor(rate.resetAt / 1000)),
+        },
+      },
+    );
+  }
+
   const form = await req.formData();
   const file = form.get("image");
   const contextRaw = form.get("context");
@@ -26,9 +42,7 @@ export async function POST(req: Request) {
 
   if (!isAllowedImageType(file.type)) {
     return NextResponse.json(
-      {
-        error: `image must be one of: ${ALLOWED_IMAGE_TYPES.join(", ")}`,
-      },
+      { error: `image must be one of: ${ALLOWED_IMAGE_TYPES.join(", ")}` },
       { status: 415 },
     );
   }
@@ -75,23 +89,24 @@ export async function POST(req: Request) {
     });
 
     const { product, verdict, headline, reasons, roast } = result;
-    return NextResponse.json({
-      product,
-      verdict: {
-        verdict: verdict as Verdict,
-        headline,
-        reasons,
-        roast,
+    return NextResponse.json(
+      {
+        product,
+        verdict: {
+          verdict: verdict as Verdict,
+          headline,
+          reasons,
+          roast,
+        },
       },
-    });
+      {
+        headers: {
+          "X-RateLimit-Remaining": String(rate.remaining),
+          "X-RateLimit-Reset": String(Math.floor(rate.resetAt / 1000)),
+        },
+      },
+    );
   } catch (err) {
-    if (err instanceof ModelError) {
-      const status = err.code === "NO_TEXT" ? 502 : 502;
-      return NextResponse.json(
-        { error: "the model returned something weird. try again." },
-        { status },
-      );
-    }
     const ve = toVerdictError(err);
     console.error(`[verdict] ${ve.code}: ${ve.logMessage}`);
     return NextResponse.json({ error: ve.userMessage }, { status: ve.status });

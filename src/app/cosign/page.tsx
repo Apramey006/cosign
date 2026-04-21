@@ -7,11 +7,13 @@ import { VerdictCard } from "@/components/verdict-card";
 import { OnboardingForm } from "@/components/onboarding-form";
 import { TabList } from "@/components/tab-list";
 import { LoadingThoughts } from "@/components/loading-thoughts";
+import { ShareButton } from "@/components/share-button";
 import {
   addToTab,
   loadContext,
   loadTab,
   saveContext,
+  updateTabEntry,
 } from "@/lib/store";
 import type { Product, TabEntry, UserContext, VerdictResult } from "@/lib/types";
 import type { PastVerdict } from "@/lib/verdict/schema";
@@ -154,6 +156,11 @@ export default function CosignPage() {
     setPhase({ kind: "idle" });
   }, [revokeAllPreviews]);
 
+  const handleTabUpdate = useCallback((id: string, patch: Partial<TabEntry>) => {
+    const updated = updateTabEntry(id, patch);
+    setTab(updated);
+  }, []);
+
   return (
     <div className="flex-1 grain">
       <header className="border-b border-zinc-800">
@@ -237,6 +244,9 @@ export default function CosignPage() {
                   verdict={phase.verdict}
                   imagePreview={phase.preview}
                 />
+                <div className="flex gap-3">
+                  <ShareButton product={phase.product} verdict={phase.verdict} />
+                </div>
                 {phase.isFirst && !context && (
                   <div className="border border-lime-300/30 bg-lime-300/5 p-5">
                     <p className="font-mono text-xs text-lime-300 uppercase tracking-widest mb-2">
@@ -292,7 +302,7 @@ export default function CosignPage() {
             <h2 className="font-mono text-xs text-zinc-400 uppercase tracking-widest mb-4">
               your tab · {tab.length}
             </h2>
-            <TabList entries={tab} />
+            <TabList entries={tab} onUpdate={handleTabUpdate} />
           </section>
         )}
       </main>
