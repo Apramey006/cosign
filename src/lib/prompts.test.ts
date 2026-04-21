@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { buildPastVerdictsPrompt, buildUserContextPrompt } from "./prompts";
+import { ARMAAN_SYSTEM, buildPastVerdictsPrompt, buildUserContextPrompt } from "./prompts";
+
+describe("ARMAAN_SYSTEM prompt", () => {
+  it("names the persona Armaan", () => {
+    expect(ARMAAN_SYSTEM).toMatch(/\bArmaan\b/);
+  });
+  it("keeps the security instructions for XML-tagged user data", () => {
+    expect(ARMAAN_SYSTEM).toContain("<past_verdict>");
+    expect(ARMAAN_SYSTEM).toContain("<user_context>");
+  });
+});
 
 describe("buildUserContextPrompt", () => {
   it("returns first-verdict message when ctx is null", () => {
