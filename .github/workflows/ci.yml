@@ -38,4 +38,4 @@ jobs:
       - name: build
         run: pnpm build
         env:
-          ANTHROPIC_API_KEY: dummy-for-build-only
+          GEMINI_API_KEY: dummy-for-build-only

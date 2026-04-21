@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { ApiError } from "@google/genai";
 import { ModelError } from "./model";
 
 export type VerdictErrorCode =
@@ -19,6 +19,15 @@ export interface VerdictError {
   details?: unknown;
 }
 
+function getStatus(err: unknown): number | undefined {
+  if (err instanceof ApiError) return err.status;
+  if (typeof err === "object" && err !== null && "status" in err) {
+    const s = (err as { status?: unknown }).status;
+    if (typeof s === "number") return s;
+  }
+  return undefined;
+}
+
 export function toVerdictError(err: unknown): VerdictError {
   if (err instanceof ModelError) {
     const code: VerdictErrorCode =
@@ -36,47 +45,50 @@ export function toVerdictError(err: unknown): VerdictError {
     };
   }
 
-  if (err instanceof Anthropic.APIError) {
-    if (err.status === 401) {
-      return {
-        code: "UPSTREAM_AUTH",
-        userMessage: "server misconfigured. try again later.",
-        logMessage: `anthropic 401: ${err.message}`,
-        status: 500,
-      };
-    }
-    if (err.status === 429) {
-      return {
-        code: "UPSTREAM_RATE_LIMIT",
-        userMessage: "too many verdicts right now. give it a minute.",
-        logMessage: `anthropic 429: ${err.message}`,
-        status: 429,
-      };
-    }
-    if (err.status && err.status >= 500) {
-      return {
-        code: "UPSTREAM_OTHER",
-        userMessage: "claude is having a moment. try again in a sec.",
-        logMessage: `anthropic ${err.status}: ${err.message}`,
-        status: 502,
-      };
-    }
+  const status = getStatus(err);
+  const rawMessage = err instanceof Error ? err.message : String(err);
+
+  if (status === 401 || status === 403) {
     return {
-      code: "UPSTREAM_OTHER",
-      userMessage: "something broke talking to the model. try again.",
-      logMessage: `anthropic ${err.status}: ${err.message}`,
-      status: err.status ?? 502,
+      code: "UPSTREAM_AUTH",
+      userMessage: "server misconfigured. try again later.",
+      logMessage: `gemini ${status}: ${rawMessage}`,
+      status: 500,
     };
   }
 
-  if (
-    err instanceof Anthropic.APIConnectionTimeoutError ||
-    (err instanceof Error && /timeout/i.test(err.message))
-  ) {
+  if (status === 429) {
+    return {
+      code: "UPSTREAM_RATE_LIMIT",
+      userMessage: "too many verdicts right now. give it a minute.",
+      logMessage: `gemini 429: ${rawMessage}`,
+      status: 429,
+    };
+  }
+
+  if (status && status >= 500) {
+    return {
+      code: "UPSTREAM_OTHER",
+      userMessage: "gemini is having a moment. try again in a sec.",
+      logMessage: `gemini ${status}: ${rawMessage}`,
+      status: 502,
+    };
+  }
+
+  if (status && status >= 400) {
+    return {
+      code: "UPSTREAM_OTHER",
+      userMessage: "something broke talking to the model. try again.",
+      logMessage: `gemini ${status}: ${rawMessage}`,
+      status,
+    };
+  }
+
+  if (err instanceof Error && /timeout|ETIMEDOUT|ECONNRESET/i.test(err.message)) {
     return {
       code: "UPSTREAM_TIMEOUT",
       userMessage: "that took too long. try again.",
-      logMessage: err instanceof Error ? err.message : String(err),
+      logMessage: err.message,
       status: 504,
     };
   }
@@ -84,7 +96,7 @@ export function toVerdictError(err: unknown): VerdictError {
   return {
     code: "UNKNOWN",
     userMessage: "something broke. try again.",
-    logMessage: err instanceof Error ? err.message : String(err),
+    logMessage: rawMessage,
     status: 500,
   };
 }

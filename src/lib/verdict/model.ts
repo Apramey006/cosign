@@ -1,4 +1,5 @@
-import { getAnthropic, PERSONA_MODEL } from "@/lib/anthropic";
+import { Type } from "@google/genai";
+import { getGemini, PERSONA_MODEL } from "@/lib/gemini";
 import { BROKE_FRIEND_SYSTEM, buildUserContextPrompt, buildPastVerdictsPrompt } from "@/lib/prompts";
 import type { UserContext } from "@/lib/types";
 import {
@@ -7,6 +8,37 @@ import {
   type PastVerdict,
   type AllowedImageType,
 } from "./schema";
+
+const GEMINI_RESPONSE_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    product: {
+      type: Type.OBJECT,
+      properties: {
+        name: { type: Type.STRING },
+        priceCents: { type: Type.INTEGER },
+        source: { type: Type.STRING },
+        description: { type: Type.STRING },
+      },
+      required: ["name", "priceCents"],
+      propertyOrdering: ["name", "priceCents", "source", "description"],
+    },
+    verdict: {
+      type: Type.STRING,
+      enum: ["COSIGNED", "NOT_COSIGNED", "SLEEP_ON_IT"],
+    },
+    headline: { type: Type.STRING },
+    reasons: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
+      minItems: "2",
+      maxItems: "5",
+    },
+    roast: { type: Type.STRING },
+  },
+  required: ["product", "verdict", "headline", "reasons"],
+  propertyOrdering: ["product", "verdict", "headline", "reasons", "roast"],
+};
 
 export class ModelError extends Error {
   code: "NO_TEXT" | "BAD_JSON" | "SCHEMA_FAIL";
@@ -39,46 +71,44 @@ export async function callVerdictModel({
   pastVerdicts,
 }: CallVerdictModelArgs): Promise<VerdictResponse> {
   const userPrompt = [
-    `user context:\n${buildUserContextPrompt(userContext)}`,
+    buildUserContextPrompt(userContext),
     buildPastVerdictsPrompt(pastVerdicts),
-    `the product they want to buy is in the attached screenshot. read it and give your verdict. output JSON only.`,
+    `the product they want to buy is in the attached screenshot. read it and give your verdict. output a single JSON object matching the schema in the system prompt.`,
   ]
     .filter(Boolean)
     .join("\n\n");
 
-  const anthropic = getAnthropic();
-  const response = await anthropic.messages.create({
+  const gemini = getGemini();
+  const response = await gemini.models.generateContent({
     model: PERSONA_MODEL,
-    max_tokens: 1024,
-    system: BROKE_FRIEND_SYSTEM,
-    messages: [
+    contents: [
       {
         role: "user",
-        content: [
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: mediaType,
-              data: base64Image,
-            },
-          },
-          { type: "text", text: userPrompt },
+        parts: [
+          { inlineData: { mimeType: mediaType, data: base64Image } },
+          { text: userPrompt },
         ],
       },
     ],
+    config: {
+      systemInstruction: BROKE_FRIEND_SYSTEM,
+      responseMimeType: "application/json",
+      responseSchema: GEMINI_RESPONSE_SCHEMA,
+      maxOutputTokens: 2048,
+      temperature: 0.95,
+    },
   });
 
-  const textBlock = response.content.find((b) => b.type === "text");
-  if (!textBlock || textBlock.type !== "text") {
-    throw new ModelError("NO_TEXT", "model returned no text block");
+  const text = response.text;
+  if (!text || text.trim().length === 0) {
+    throw new ModelError("NO_TEXT", "model returned no text");
   }
 
   let parsed: unknown;
   try {
-    parsed = JSON.parse(stripJsonFence(textBlock.text));
+    parsed = JSON.parse(stripJsonFence(text));
   } catch {
-    throw new ModelError("BAD_JSON", "model returned invalid JSON", { raw: textBlock.text });
+    throw new ModelError("BAD_JSON", "model returned invalid JSON", { raw: text });
   }
 
   const validated = VerdictResponseSchema.safeParse(parsed);
