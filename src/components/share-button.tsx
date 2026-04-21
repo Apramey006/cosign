@@ -53,7 +53,7 @@ export function ShareButton({ product, verdict }: ShareButtonProps) {
     <button
       type="button"
       onClick={handleShare}
-      className="font-mono uppercase tracking-wider text-zinc-200 px-5 py-3 border border-zinc-700 hover:border-lime-300 hover:text-lime-300 focus:outline-none focus-visible:border-lime-300 focus-visible:text-lime-300 transition-colors text-sm"
+      className="font-receipt uppercase tracking-wider text-ink px-5 py-3 border border-ink/30 hover:border-ink hover:text-stamp-red focus:outline-none focus-visible:border-ink focus-visible:text-stamp-red transition-colors text-sm"
     >
       {copied ? "copied ✓" : error ? error : "share verdict →"}
     </button>

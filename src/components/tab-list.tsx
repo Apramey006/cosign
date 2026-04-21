@@ -12,8 +12,8 @@ interface TabListProps {
 export function TabList({ entries, onUpdate }: TabListProps) {
   if (entries.length === 0) {
     return (
-      <div className="border border-dashed border-zinc-800 p-8 text-center">
-        <p className="font-mono text-sm text-zinc-400">
+      <div className="border-2 border-dashed border-ink/20 p-8 text-center bg-paper-tint">
+        <p className="font-receipt text-sm text-ink-muted">
           no verdicts yet. upload a screenshot to start your tab.
         </p>
       </div>
@@ -27,13 +27,13 @@ export function TabList({ entries, onUpdate }: TabListProps) {
         return (
           <li
             key={entry.id}
-            className="border border-zinc-800 bg-zinc-950 p-4 hover:border-zinc-700 transition-colors"
+            className="border border-ink/20 bg-paper-tint p-4 hover:border-ink transition-colors"
           >
             <div className="flex items-center gap-4">
               <VerdictStamp verdict={entry.verdict.verdict} size="sm" />
               <div className="flex-1 min-w-0">
                 <p className="font-medium truncate">{entry.product.name}</p>
-                <p className="text-xs text-zinc-400 font-mono mt-1">
+                <p className="text-xs text-ink-muted font-receipt mt-1">
                   {entry.product.source ? `${entry.product.source} · ` : ""}
                   {formatPrice(entry.product.priceCents)} ·{" "}
                   {new Date(entry.createdAt).toLocaleDateString(undefined, {
@@ -45,40 +45,40 @@ export function TabList({ entries, onUpdate }: TabListProps) {
             </div>
 
             {controlsEnabled && (
-              <div className="mt-3 pt-3 border-t border-zinc-900 flex flex-wrap items-center gap-2">
+              <div className="mt-3 pt-3 border-t border-ink/10 flex flex-wrap items-center gap-2">
                 {!entry.purchased ? (
                   <>
-                    <span className="font-mono text-xs text-zinc-500 uppercase tracking-widest mr-1">
+                    <span className="font-receipt text-xs text-ink-muted uppercase tracking-widest mr-1">
                       did u buy it?
                     </span>
                     <button
                       type="button"
                       onClick={() => onUpdate?.(entry.id, { purchased: true })}
-                      className="font-mono text-xs uppercase tracking-wider px-3 py-1.5 border border-zinc-700 hover:border-lime-300 hover:text-lime-300 focus:outline-none focus-visible:border-lime-300 focus-visible:text-lime-300 transition-colors"
+                      className="font-receipt text-xs uppercase tracking-wider px-3 py-1.5 border border-ink/30 hover:border-ink hover:text-ink focus:outline-none focus-visible:border-ink transition-colors"
                     >
                       yeah, i bought it
                     </button>
                     <button
                       type="button"
                       onClick={() => onUpdate?.(entry.id, { purchased: false })}
-                      className="font-mono text-xs uppercase tracking-wider text-zinc-500 px-3 py-1.5 hover:text-zinc-300 focus:outline-none focus-visible:text-zinc-300 transition-colors"
+                      className="font-receipt text-xs uppercase tracking-wider text-ink-muted px-3 py-1.5 hover:text-ink focus:outline-none focus-visible:text-ink transition-colors"
                     >
                       nah
                     </button>
                   </>
                 ) : (
                   <>
-                    <span className="font-mono text-xs text-zinc-500 uppercase tracking-widest mr-1">
+                    <span className="font-receipt text-xs text-ink-muted uppercase tracking-widest mr-1">
                       still glad?
                     </span>
                     <button
                       type="button"
                       aria-pressed={entry.stillGlad === true}
                       onClick={() => onUpdate?.(entry.id, { stillGlad: true })}
-                      className={`font-mono text-xs uppercase tracking-wider px-3 py-1.5 border transition-colors focus:outline-none focus-visible:border-lime-300 ${
+                      className={`font-receipt text-xs uppercase tracking-wider px-3 py-1.5 border transition-colors focus:outline-none focus-visible:border-ink ${
                         entry.stillGlad === true
-                          ? "border-lime-300 text-lime-300 bg-lime-300/10"
-                          : "border-zinc-700 hover:border-lime-300 hover:text-lime-300"
+                          ? "border-stamp-green text-stamp-green bg-stamp-green/5"
+                          : "border-ink/30 hover:border-stamp-green hover:text-stamp-green"
                       }`}
                     >
                       still glad
@@ -87,10 +87,10 @@ export function TabList({ entries, onUpdate }: TabListProps) {
                       type="button"
                       aria-pressed={entry.stillGlad === false}
                       onClick={() => onUpdate?.(entry.id, { stillGlad: false })}
-                      className={`font-mono text-xs uppercase tracking-wider px-3 py-1.5 border transition-colors focus:outline-none focus-visible:border-red-400 ${
+                      className={`font-receipt text-xs uppercase tracking-wider px-3 py-1.5 border transition-colors focus:outline-none focus-visible:border-ink ${
                         entry.stillGlad === false
-                          ? "border-red-400 text-red-400 bg-red-400/10"
-                          : "border-zinc-700 hover:border-red-400 hover:text-red-400"
+                          ? "border-stamp-red text-stamp-red bg-stamp-red/5"
+                          : "border-ink/30 hover:border-stamp-red hover:text-stamp-red"
                       }`}
                     >
                       regret it
@@ -100,7 +100,7 @@ export function TabList({ entries, onUpdate }: TabListProps) {
                       onClick={() =>
                         onUpdate?.(entry.id, { purchased: false, stillGlad: null })
                       }
-                      className="font-mono text-xs uppercase tracking-wider text-zinc-500 px-3 py-1.5 ml-auto hover:text-zinc-300 focus:outline-none focus-visible:text-zinc-300 transition-colors"
+                      className="font-receipt text-xs uppercase tracking-wider text-ink-muted px-3 py-1.5 ml-auto hover:text-ink focus:outline-none focus-visible:text-ink transition-colors"
                     >
                       undo
                     </button>

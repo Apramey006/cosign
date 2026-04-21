@@ -9,24 +9,22 @@ const SAMPLE_REASONS = [
 
 export default function Home() {
   return (
-    <div className="flex-1 grain">
-      <header className="border-b border-zinc-800">
+    <div className="flex-1 paper">
+      <header className="border-b border-rule">
         <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-lg font-bold tracking-tight">
-              cosign<span className="text-lime-300">.</span>
-            </span>
-          </div>
-          <nav className="flex items-center gap-6 text-sm text-zinc-300 font-mono">
+          <span className="font-display italic text-2xl leading-none">
+            cosign<span className="text-stamp-red not-italic">.</span>
+          </span>
+          <nav className="flex items-center gap-6 text-sm font-receipt text-ink-muted">
             <Link
               href="/cosign"
-              className="hover:text-lime-300 focus:outline-none focus-visible:text-lime-300 transition-colors"
+              className="hover:text-ink focus:outline-none focus-visible:text-ink transition-colors"
             >
               try it
             </Link>
             <Link
               href="https://github.com/Apramey006/cosign"
-              className="hover:text-lime-300 focus:outline-none focus-visible:text-lime-300 transition-colors"
+              className="hover:text-ink focus:outline-none focus-visible:text-ink transition-colors"
               target="_blank"
             >
               github
@@ -35,77 +33,97 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-20 md:py-32">
+      <main className="max-w-5xl mx-auto px-6 py-20 md:py-28">
         <section className="space-y-10">
           <div className="space-y-6 max-w-3xl">
-            <div className="inline-flex items-center gap-2 font-mono text-xs text-zinc-300 uppercase tracking-widest border border-zinc-700 px-3 py-1.5 rounded-full">
-              <span className="h-1.5 w-1.5 rounded-full bg-lime-300 animate-pulse" />
-              broke-friend energy, on demand
+            <div className="inline-flex items-center gap-2 font-receipt text-xs uppercase tracking-widest border border-rule-strong px-3 py-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-stamp-red animate-pulse" />
+              meet armaan — your stingy friend
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-[-0.04em] leading-[1.02] font-display">
-              you need a <span className="text-lime-300">cosigner</span>
+            <h1 className="font-display text-6xl md:text-8xl leading-[0.95] tracking-tight">
+              you need a <em className="text-stamp-red">cosigner</em>
               <br />
               for that purchase.
             </h1>
-            <p className="text-xl md:text-2xl text-zinc-300 max-w-2xl leading-relaxed">
-              upload a screenshot of anything you&apos;re about to buy. get the
-              honest verdict your group chat is too polite to give.
+            <p className="text-xl md:text-2xl text-ink-muted max-w-2xl leading-snug">
+              upload a screenshot of anything you&apos;re about to buy. armaan
+              gives you the honest verdict your group chat is too polite to
+              give.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Link
               href="/cosign"
-              className="inline-flex items-center justify-center font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-8 py-4 hover:bg-lime-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-colors"
+              className="inline-flex items-center justify-center font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-8 py-4 hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors"
             >
-              get a verdict →
+              ask armaan →
             </Link>
             <Link
               href="#how"
-              className="inline-flex items-center justify-center font-mono uppercase tracking-wider text-zinc-300 px-8 py-4 border border-zinc-700 hover:border-lime-300 hover:text-lime-300 focus:outline-none focus-visible:border-lime-300 focus-visible:text-lime-300 transition-colors"
+              className="inline-flex items-center justify-center font-receipt uppercase tracking-wider text-ink px-8 py-4 border border-rule-strong hover:border-ink focus:outline-none focus-visible:border-ink transition-colors"
             >
               how it works
             </Link>
           </div>
         </section>
 
-        <section className="mt-28 md:mt-40">
-          <div className="border-2 border-zinc-800 bg-zinc-950 p-8 md:p-14 max-w-3xl relative">
-            <div className="absolute -top-8 -right-4 md:-top-10 md:-right-8">
-              <VerdictStamp verdict="NOT_COSIGNED" size="xl" />
-            </div>
-            <p className="font-mono text-xs text-zinc-400 uppercase tracking-widest mb-6">
-              example verdict
+        {/* Sample verdict — receipt card */}
+        <section className="mt-24 md:mt-32">
+          <div className="max-w-3xl mx-auto">
+            <p className="font-receipt text-xs text-ink-muted uppercase tracking-widest mb-4 text-center">
+              example verdict · no. 0042
             </p>
-            <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
-              <div className="h-28 w-28 md:h-40 md:w-40 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 font-mono text-xs shrink-0">
-                IMG
+            <div className="bg-paper-tint border border-ink/15 px-6 md:px-12 py-10 md:py-14 relative shadow-[2px_4px_0_rgba(28,25,23,0.12)]">
+              <div className="absolute -top-8 -right-4 md:-top-10 md:-right-8">
+                <VerdictStamp verdict="NOT_COSIGNED" size="xl" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-mono text-sm text-zinc-400">
-                  amazon.com · $84
-                </p>
-                <h3 className="text-2xl md:text-3xl font-semibold mt-1 font-display tracking-tight">
-                  ergonomic mesh office chair (viral tiktok listing)
-                </h3>
-                <p className="mt-5 text-zinc-100 text-xl md:text-2xl leading-snug">
-                  bro. no.
-                </p>
-                <ul className="mt-5 space-y-2.5 text-zinc-300 font-mono text-sm md:text-base">
-                  {SAMPLE_REASONS.map((r, i) => (
-                    <li key={i} className="flex gap-3">
-                      <span className="text-lime-300">›</span>
-                      <span>{r}</span>
-                    </li>
-                  ))}
-                </ul>
+
+              <div className="flex items-start justify-between mb-6 font-receipt text-xs text-ink-muted uppercase tracking-widest">
+                <span>armaan · cosign</span>
+                <span>apr · 2026</span>
+              </div>
+
+              <div className="rule-dashed h-px mb-6" />
+
+              <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
+                <div className="h-28 w-28 md:h-36 md:w-36 bg-paper border-2 border-ink/20 flex items-center justify-center text-ink-fade font-receipt text-xs shrink-0">
+                  IMG
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-receipt text-sm text-ink-muted">
+                    amazon.com · $84.00
+                  </p>
+                  <h3 className="font-display text-3xl md:text-4xl mt-1 leading-none">
+                    ergonomic mesh office chair
+                  </h3>
+                  <p className="mt-5 text-2xl md:text-3xl font-display italic leading-tight">
+                    bro. no.
+                  </p>
+                  <ul className="mt-6 space-y-2 font-receipt text-sm text-ink">
+                    {SAMPLE_REASONS.map((r, i) => (
+                      <li key={i} className="flex gap-3">
+                        <span className="text-stamp-red">›</span>
+                        <span>{r}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="rule-dashed h-px mt-10" />
+
+              <div className="flex items-center justify-between mt-4 font-receipt text-[10px] text-ink-fade uppercase tracking-widest">
+                <span>thank u for shopping honestly</span>
+                <span>·· armaan ··</span>
               </div>
             </div>
           </div>
         </section>
 
-        <section id="how" className="mt-28 md:mt-40">
-          <h2 className="font-mono text-sm text-zinc-400 uppercase tracking-widest mb-10">
+        {/* How it works */}
+        <section id="how" className="mt-28 md:mt-36">
+          <h2 className="font-receipt text-sm text-ink-muted uppercase tracking-widest mb-10">
             how it works
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -113,48 +131,49 @@ export default function Home() {
               {
                 n: "01",
                 title: "screenshot",
-                body: "anything. amazon, tiktok shop, depop, an ig post. we read it with claude vision.",
+                body: "anything. amazon, tiktok shop, depop, an ig post. we read it with gemini vision.",
               },
               {
                 n: "02",
                 title: "context",
-                body: "your broke-friend AI knows your budget, your goals, your recent regrets. no generic advice.",
+                body: "armaan knows your budget, your goals, your recent regrets. no generic advice.",
               },
               {
                 n: "03",
                 title: "verdict",
-                body: "COSIGNED, NOT COSIGNED, or SLEEP ON IT. with reasons. in your broke friend's voice.",
+                body: "COSIGNED, NOT COSIGNED, or SLEEP ON IT. with reasons. in armaan's voice.",
               },
             ].map((step) => (
               <div
                 key={step.n}
-                className="border-l-2 border-zinc-800 pl-6 hover:border-lime-300 transition-colors"
+                className="border-l-2 border-ink/30 pl-6 hover:border-stamp-red transition-colors"
               >
-                <p className="font-mono text-xs text-lime-300 mb-2">
+                <p className="font-receipt text-xs text-stamp-red mb-2">
                   {step.n}
                 </p>
-                <h3 className="text-xl font-semibold mb-2 font-display tracking-tight">
+                <h3 className="font-display text-2xl mb-2 leading-none">
                   {step.title}
                 </h3>
-                <p className="text-zinc-300 leading-relaxed">{step.body}</p>
+                <p className="text-ink-muted leading-relaxed">{step.body}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="mt-28 md:mt-40">
-          <h2 className="font-mono text-sm text-zinc-400 uppercase tracking-widest mb-10">
+        {/* Why it's different */}
+        <section className="mt-28 md:mt-36">
+          <h2 className="font-receipt text-sm text-ink-muted uppercase tracking-widest mb-10">
             why it isn&apos;t just chatgpt for shopping
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             {[
               [
                 "persistent memory",
-                "it remembers every purchase you've run through. it notices patterns you don't.",
+                "armaan remembers every purchase you've run through. he notices patterns you don't.",
               ],
               [
                 "longitudinal regret scoring",
-                "30/90/180 days after you buy, it pings: still glad? builds your actual regret profile over time.",
+                "30/90/180 days after you buy, he pings: still glad? builds your actual regret profile over time.",
               ],
               [
                 "friend jury (coming soon)",
@@ -162,39 +181,39 @@ export default function Home() {
               ],
               [
                 "anti-influencer mode (coming soon)",
-                "paste a tiktok shop link. we surface what the hype cycle left out.",
+                "paste a tiktok shop link. armaan surfaces what the hype cycle left out.",
               ],
             ].map(([title, body]) => (
               <div
                 key={title}
-                className="border border-zinc-800 p-6 hover:border-lime-300 transition-colors"
+                className="border border-ink/20 bg-paper-tint p-6 hover:border-ink transition-colors"
               >
-                <h3 className="font-mono text-sm uppercase tracking-wider text-lime-300 mb-3">
+                <h3 className="font-receipt text-sm uppercase tracking-wider text-stamp-red mb-3">
                   {title}
                 </h3>
-                <p className="text-zinc-200 leading-relaxed">{body}</p>
+                <p className="text-ink leading-relaxed">{body}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="mt-32 pb-10 text-center">
+        <section className="mt-28 pb-10 text-center">
           <Link
             href="/cosign"
-            className="inline-flex items-center justify-center font-mono uppercase tracking-wider font-bold bg-lime-300 text-black px-10 py-5 text-lg hover:bg-lime-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-colors"
+            className="inline-flex items-center justify-center font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-10 py-5 text-lg hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors"
           >
             get your first verdict →
           </Link>
-          <p className="mt-6 text-xs text-zinc-400 font-mono">
+          <p className="mt-6 text-xs text-ink-fade font-receipt">
             free while in beta · no signup for the first verdict
           </p>
         </section>
       </main>
 
-      <footer className="border-t border-zinc-900 mt-20">
-        <div className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-xs font-mono text-zinc-500">
+      <footer className="border-t border-rule mt-20">
+        <div className="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-xs font-receipt text-ink-muted">
           <span>cosign · built by a broke college kid, for broke college kids</span>
-          <span>v0.3 · round 1 feedback</span>
+          <span>v1.0 · paper edition</span>
         </div>
       </footer>
     </div>

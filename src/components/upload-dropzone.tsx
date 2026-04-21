@@ -61,21 +61,21 @@ export function UploadDropzone({ onFile, disabled }: UploadDropzoneProps) {
           if (file) handleFile(file);
         }}
         className={cn(
-          "border-2 border-dashed p-12 md:p-16 text-center cursor-pointer transition-colors select-none",
-          "focus:outline-none focus-visible:border-lime-300 focus-visible:ring-2 focus-visible:ring-lime-300/40",
+          "border-2 border-dashed p-12 md:p-16 text-center cursor-pointer transition-colors select-none bg-paper-tint",
+          "focus:outline-none focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-ink/20",
           dragging
-            ? "border-lime-300 bg-lime-300/5"
-            : "border-zinc-800 hover:border-zinc-600",
+            ? "border-stamp-red bg-stamp-red/5"
+            : "border-ink/30 hover:border-ink",
           disabled && "opacity-50 cursor-not-allowed",
         )}
       >
-        <p className="font-mono text-xs text-zinc-400 uppercase tracking-widest mb-4">
+        <p className="font-receipt text-xs text-ink-muted uppercase tracking-widest mb-4">
           step 1 · screenshot
         </p>
-        <p className="text-zinc-100 text-lg md:text-xl mb-3">
-          drop a screenshot — or click to pick one
+        <p className="font-display text-2xl md:text-3xl mb-3 leading-none">
+          drop a screenshot — or click
         </p>
-        <p className="text-zinc-400 text-sm max-w-md mx-auto">
+        <p className="font-receipt text-sm text-ink-muted max-w-md mx-auto">
           anything: amazon, tiktok shop, depop, an ig ad. png / jpg / webp / gif · up to 8mb
         </p>
         <input
@@ -92,7 +92,7 @@ export function UploadDropzone({ onFile, disabled }: UploadDropzoneProps) {
         />
       </div>
       {error && (
-        <p className="mt-3 font-mono text-sm text-red-400" role="alert">
+        <p className="mt-3 font-receipt text-sm text-stamp-red" role="alert">
           {error}
         </p>
       )}

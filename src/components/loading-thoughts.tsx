@@ -21,20 +21,20 @@ export function LoadingThoughts() {
   }, []);
 
   return (
-    <div className="border-2 border-zinc-800 bg-zinc-950 p-12 md:p-16">
-      <p className="font-mono text-xs text-lime-300 uppercase tracking-widest mb-6">
-        your broke friend is thinking
+    <div className="bg-paper-tint border border-ink/20 px-6 md:px-12 py-12 md:py-16 shadow-[2px_4px_0_rgba(28,25,23,0.12)]">
+      <p className="font-receipt text-xs text-stamp-red uppercase tracking-widest mb-6">
+        armaan is thinking
       </p>
       <ul className="space-y-3" aria-live="polite">
         {THOUGHTS.slice(0, index + 1).map((t, i) => (
           <li
             key={i}
-            className="font-mono text-lg md:text-2xl text-zinc-200 animate-in fade-in slide-in-from-left-2 duration-300"
+            className="font-receipt text-lg md:text-2xl text-ink animate-in fade-in slide-in-from-left-2 duration-300"
           >
-            <span className="text-lime-300">›</span> {t}
+            <span className="text-stamp-red">›</span> {t}
             {i === index && (
               <span
-                className="inline-block w-2 h-5 md:h-6 ml-1 bg-lime-300 align-middle animate-pulse"
+                className="inline-block w-2 h-5 md:h-6 ml-1 bg-ink align-middle animate-pulse"
                 aria-hidden
               />
             )}
