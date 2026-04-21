@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# cosign
 
-## Getting Started
+> you need a cosigner for that purchase.
 
-First, run the development server:
+**Cosign** is an AI "broke-friend" who vets your purchases. Upload a screenshot of anything you're about to buy — Amazon, TikTok Shop, Depop, an IG ad — and get an honest verdict in the voice of the friend who always keeps it real.
+
+Not just ChatGPT for shopping. Four unique mechanics:
+
+1. **Persistent persona with memory.** Knows your budget, past purchases, saving goals, recent regrets. Roasts accordingly.
+2. **Longitudinal regret scoring.** 30/90/180-day pings. Builds your actual regret profile, not your narrative.
+3. **Friend jury** (coming). Text 3 real friends; they vote on your purchase.
+4. **Anti-influencer mode** (coming). Paste a TikTok Shop link; we surface what the hype cycle hid.
+
+Built as an iterative portfolio project — each PR is a review round by a separate lens (PM / VC / SWE / UX).
+
+## Stack
+
+- Next.js 16 (App Router, Turbopack)
+- TypeScript + Tailwind v4
+- Supabase (auth + Postgres + Storage)
+- Anthropic Claude Sonnet 4.5 (vision + persona)
+- Vercel hosting
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local  # fill in keys
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Env vars (all free tier):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — from https://supabase.com
+- `ANTHROPIC_API_KEY` — from https://console.anthropic.com
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Iteration trail
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [x] **PR #1** — scaffold + landing page
+- [ ] **PR #2** — working v1 (vision → verdict → tab)
+- [ ] **PR #3** — review-round-1 feedback
+- [ ] **PR #4** — moat features (regret pings + friend jury)
+- [ ] **PR #5** — final polish + deploy config
