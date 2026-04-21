@@ -18,7 +18,7 @@ const VERDICT_STYLES: Record<Verdict, { label: string; className: string }> = {
 
 interface VerdictStampProps {
   verdict: Verdict;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
 }
 
@@ -31,12 +31,16 @@ export function VerdictStamp({
   const sizeClass =
     size === "sm"
       ? "text-xs px-2 py-1 tracking-wider"
-      : size === "lg"
-        ? "text-3xl px-6 py-3 tracking-widest"
-        : "text-sm px-3 py-1.5 tracking-wider";
+      : size === "md"
+        ? "text-sm px-3 py-1.5 tracking-wider"
+        : size === "lg"
+          ? "text-2xl md:text-3xl px-5 md:px-7 py-2.5 md:py-3 tracking-widest"
+          : "text-3xl md:text-5xl px-6 md:px-9 py-3 md:py-5 tracking-widest";
 
   return (
     <span
+      role="img"
+      aria-label={`verdict: ${style.label.toLowerCase()}`}
       className={cn(
         "inline-flex items-center font-mono font-bold uppercase border-2 -rotate-2 select-none",
         sizeClass,
