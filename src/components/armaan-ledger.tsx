@@ -65,15 +65,18 @@ export function ArmaanLedger({ entries, onReviewClick }: ArmaanLedgerProps) {
         )}
 
         {stats.armaanAccuracy && stats.armaanAccuracy.total >= 2 && (
-          <li className="flex items-center gap-2">
-            <span className="text-stamp-red">›</span>
-            <span>
-              armaan was right{" "}
-              <span className="font-bold">
-                {stats.armaanAccuracy.correct}/{stats.armaanAccuracy.total}
+          <li className="py-2">
+            <div className="font-display italic text-2xl md:text-3xl text-ink leading-none">
+              armaan was right {stats.armaanAccuracy.correct}/
+              {stats.armaanAccuracy.total} times
+            </div>
+            <div className="font-receipt text-xs text-ink-muted uppercase tracking-widest mt-2">
+              batting{" "}
+              <span className="text-ink font-bold">
+                .{String(stats.armaanAccuracy.percent).padStart(3, "0")}
               </span>{" "}
-              times (<span className="font-bold">{stats.armaanAccuracy.percent}%</span>)
-            </span>
+              this tab
+            </div>
           </li>
         )}
 

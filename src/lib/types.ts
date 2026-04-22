@@ -29,4 +29,11 @@ export interface TabEntry {
   createdAt: string;
   stillGlad?: boolean | null;
   followUpAt?: string;
+  /**
+   * true once the user has *explicitly* answered the "did u buy it?" prompt.
+   * When undefined: the prompt shows.
+   * When true + purchased=false: user said "nah" — prompt stays hidden.
+   * When true + purchased=true: user said "yeah" — still-glad prompt takes over.
+   */
+  buyAnswered?: boolean;
 }
