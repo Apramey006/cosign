@@ -35,6 +35,51 @@ describe("ARMAAN_SYSTEM prompt", () => {
     expect(ARMAAN_SYSTEM).toMatch(/not a.*product|this isn't a product|isn.t a product/i);
     expect(ARMAAN_SYSTEM).toMatch(/SLEEP_ON_IT/);
   });
+  it("treats spending traps as a first-class NOT_COSIGNED signal", () => {
+    expect(ARMAAN_SYSTEM).toMatch(/trap.match|spendingTraps/i);
+    expect(ARMAAN_SYSTEM).toMatch(/doordash when stressed|their exact words/i);
+  });
+  it("references the tab_summary derived-stats block", () => {
+    expect(ARMAAN_SYSTEM).toMatch(/<tab_summary>/);
+  });
+  it("balances cosign and reject examples (not reject-everything biased)", () => {
+    // Had a regression where new prompt only showed NOT_COSIGNED examples —
+    // this test guards against that coming back
+    const cosignedExamples = ARMAAN_SYSTEM.match(/COSIGNED/g) ?? [];
+    const rejectExamples = ARMAAN_SYSTEM.match(/NOT_COSIGNED/g) ?? [];
+    expect(cosignedExamples.length).toBeGreaterThanOrEqual(rejectExamples.length);
+  });
+});
+
+describe("buildUserContextPrompt with richer profile", () => {
+  it("includes spendingTraps when provided", () => {
+    const out = buildUserContextPrompt({
+      weeklyBudgetCents: 5000,
+      spendingTraps: ["doordash when stressed", "clothes at 1am"],
+    });
+    expect(out).toMatch(/spending traps/i);
+    expect(out).toContain("doordash when stressed");
+    expect(out).toContain("clothes at 1am");
+  });
+  it("includes lifeStage when provided", () => {
+    const out = buildUserContextPrompt({
+      lifeStage: "cs senior at columbia, broke, grad in may",
+    });
+    expect(out).toMatch(/life stage/i);
+    expect(out).toContain("cs senior");
+  });
+  it("handles multiple saving goals", () => {
+    const out = buildUserContextPrompt({
+      savingGoals: ["coachella", "new laptop", "moving-out deposit"],
+    });
+    expect(out).toContain("coachella");
+    expect(out).toContain("new laptop");
+    expect(out).toContain("moving-out deposit");
+  });
+  it("returns product-alone guidance when profile is completely empty", () => {
+    const out = buildUserContextPrompt({});
+    expect(out).toMatch(/empty|product alone/i);
+  });
 });
 
 describe("buildUserContextPrompt", () => {

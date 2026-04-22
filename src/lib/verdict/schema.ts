@@ -3,8 +3,10 @@ import { z } from "zod";
 export const UserContextSchema = z
   .object({
     weeklyBudgetCents: z.number().int().nonnegative().optional(),
-    savingGoals: z.array(z.string().min(1).max(120)).max(5).optional(),
-    recentRegrets: z.array(z.string().min(1).max(120)).max(5).optional(),
+    savingGoals: z.array(z.string().min(1).max(160)).max(6).optional(),
+    recentRegrets: z.array(z.string().min(1).max(160)).max(6).optional(),
+    spendingTraps: z.array(z.string().min(1).max(160)).max(6).optional(),
+    lifeStage: z.string().max(200).optional(),
   })
   .nullable()
   .optional();

@@ -9,6 +9,10 @@ import {
   type AllowedImageType,
 } from "./schema";
 
+interface TabSummaryBlock {
+  summaryText: string;
+}
+
 const GEMINI_RESPONSE_SCHEMA = {
   type: Type.OBJECT,
   properties: {
@@ -55,6 +59,7 @@ interface CallVerdictModelArgs {
   mediaType: AllowedImageType;
   userContext: UserContext | null;
   pastVerdicts: PastVerdict[];
+  tabSummary?: TabSummaryBlock;
 }
 
 function stripJsonFence(text: string): string {
@@ -69,13 +74,15 @@ export async function callVerdictModel({
   mediaType,
   userContext,
   pastVerdicts,
+  tabSummary,
 }: CallVerdictModelArgs): Promise<VerdictResponse> {
   const userPrompt = [
     buildUserContextPrompt(userContext),
+    tabSummary?.summaryText ?? "",
     buildPastVerdictsPrompt(pastVerdicts),
     `the product they want to buy is in the attached screenshot. read it and give your verdict. output a single JSON object matching the schema in the system prompt.`,
   ]
-    .filter(Boolean)
+    .filter((s) => s.trim().length > 0)
     .join("\n\n");
 
   const gemini = getGemini();

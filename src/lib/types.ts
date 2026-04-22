@@ -19,6 +19,10 @@ export interface UserContext {
   weeklyBudgetCents?: number;
   savingGoals?: string[];
   recentRegrets?: string[];
+  /** Recurring spending lanes where they tend to overspend ("clothes at night", "doordash when stressed") */
+  spendingTraps?: string[];
+  /** One-liner lifestyle context ("cs senior at columbia", "first job post-grad", "gap year in nyc") */
+  lifeStage?: string;
 }
 
 export interface TabEntry {

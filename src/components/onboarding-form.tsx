@@ -10,6 +10,20 @@ interface OnboardingFormProps {
   compact?: boolean;
 }
 
+const MAX_LINES = 4;
+
+function linesToArray(s: string): string[] {
+  return s
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)
+    .slice(0, MAX_LINES);
+}
+
+function arrayToLines(arr?: string[]): string {
+  return (arr ?? []).join("\n");
+}
+
 export function OnboardingForm({
   initial,
   onSave,
@@ -19,18 +33,33 @@ export function OnboardingForm({
   const [budget, setBudget] = useState(
     initial?.weeklyBudgetCents ? String(initial.weeklyBudgetCents / 100) : "",
   );
-  const [goal, setGoal] = useState(initial?.savingGoals?.[0] ?? "");
-  const [regret, setRegret] = useState(initial?.recentRegrets?.[0] ?? "");
+  const [goals, setGoals] = useState(arrayToLines(initial?.savingGoals));
+  const [traps, setTraps] = useState(arrayToLines(initial?.spendingTraps));
+  const [lifeStage, setLifeStage] = useState(initial?.lifeStage ?? "");
+  const [lastRegret, setLastRegret] = useState(
+    initial?.recentRegrets?.[0] ?? "",
+  );
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const ctx: UserContext = {};
+
     const budgetNum = Number(budget);
     if (!isNaN(budgetNum) && budgetNum > 0) {
       ctx.weeklyBudgetCents = Math.round(budgetNum * 100);
     }
-    if (goal.trim()) ctx.savingGoals = [goal.trim()];
-    if (regret.trim()) ctx.recentRegrets = [regret.trim()];
+
+    const goalArr = linesToArray(goals);
+    if (goalArr.length > 0) ctx.savingGoals = goalArr;
+
+    const trapArr = linesToArray(traps);
+    if (trapArr.length > 0) ctx.spendingTraps = trapArr;
+
+    if (lifeStage.trim()) ctx.lifeStage = lifeStage.trim().slice(0, 200);
+
+    const regretTrim = lastRegret.trim();
+    if (regretTrim) ctx.recentRegrets = [regretTrim];
+
     onSave(ctx);
   }
 
@@ -41,27 +70,45 @@ export function OnboardingForm({
     >
       <div>
         <p className="font-receipt text-xs text-stamp-red uppercase tracking-widest mb-2">
-          give armaan the receipts
+          armaan&apos;s file on u
         </p>
         <h2 className="font-display text-2xl md:text-3xl leading-none">
-          he can&apos;t call u out if he doesn&apos;t know u
+          the more he knows u, the sharper the roasts
         </h2>
         {!compact && (
           <p className="text-ink-muted text-sm mt-3 font-receipt">
-            all optional. saved in your browser only.
+            everything is optional. saved only in your browser.
           </p>
         )}
       </div>
 
       <div className="rule-dashed h-px" />
 
-      <div className="space-y-4">
+      <div className="space-y-5">
+        <div>
+          <label
+            className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
+            htmlFor="lifeStage"
+          >
+            whats ur deal rn?
+          </label>
+          <input
+            id="lifeStage"
+            type="text"
+            maxLength={200}
+            value={lifeStage}
+            onChange={(e) => setLifeStage(e.target.value)}
+            placeholder="e.g. cs senior at columbia, broke, grad in may"
+            className="w-full bg-paper border-2 border-ink/20 focus:border-ink focus:outline-none px-4 py-3 text-ink"
+          />
+        </div>
+
         <div>
           <label
             className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
             htmlFor="budget"
           >
-            how much can u blow a week?
+            weekly fun money (after rent/bills)
           </label>
           <input
             id="budget"
@@ -79,18 +126,36 @@ export function OnboardingForm({
         <div>
           <label
             className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
-            htmlFor="goal"
+            htmlFor="goals"
           >
-            what are u actually saving for?
+            what u saving for? (one per line, up to 4)
           </label>
-          <input
-            id="goal"
-            type="text"
-            maxLength={120}
-            value={goal}
-            onChange={(e) => setGoal(e.target.value)}
-            placeholder="e.g. coachella in april"
-            className="w-full bg-paper border-2 border-ink/20 focus:border-ink focus:outline-none px-4 py-3 text-ink"
+          <textarea
+            id="goals"
+            rows={3}
+            maxLength={640}
+            value={goals}
+            onChange={(e) => setGoals(e.target.value)}
+            placeholder={`coachella in april (~$500)\nnew laptop by summer\nmoving-out deposit`}
+            className="w-full bg-paper border-2 border-ink/20 focus:border-ink focus:outline-none px-4 py-3 text-ink resize-none"
+          />
+        </div>
+
+        <div>
+          <label
+            className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
+            htmlFor="traps"
+          >
+            ur money traps (lanes where u overspend, one per line)
+          </label>
+          <textarea
+            id="traps"
+            rows={3}
+            maxLength={640}
+            value={traps}
+            onChange={(e) => setTraps(e.target.value)}
+            placeholder={`doordash when stressed\nclothes at 1am\nrandom amazon stuff`}
+            className="w-full bg-paper border-2 border-ink/20 focus:border-ink focus:outline-none px-4 py-3 text-ink resize-none"
           />
         </div>
 
@@ -99,15 +164,15 @@ export function OnboardingForm({
             className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
             htmlFor="regret"
           >
-            last thing u regret buying?
+            last thing u regret buying
           </label>
           <input
             id="regret"
             type="text"
-            maxLength={120}
-            value={regret}
-            onChange={(e) => setRegret(e.target.value)}
-            placeholder="e.g. another productivity journal"
+            maxLength={160}
+            value={lastRegret}
+            onChange={(e) => setLastRegret(e.target.value)}
+            placeholder="e.g. another pair of jordans"
             className="w-full bg-paper border-2 border-ink/20 focus:border-ink focus:outline-none px-4 py-3 text-ink"
           />
         </div>
