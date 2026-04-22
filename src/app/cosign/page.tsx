@@ -196,7 +196,7 @@ export default function CosignPage() {
   const onboardingVisible = showOnboarding || autoShowOnboarding;
 
   return (
-    <div className="flex-1 paper">
+    <div className="flex-1 paper paper-grain">
       <header className="border-b border-rule">
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link
