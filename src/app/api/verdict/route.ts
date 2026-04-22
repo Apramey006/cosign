@@ -11,6 +11,7 @@ import {
 import { callVerdictModel } from "@/lib/verdict/model";
 import { toVerdictError } from "@/lib/verdict/errors";
 import { checkRateLimit, clientKeyFromRequest } from "@/lib/rate-limit";
+import { z } from "zod";
 import {
   assertGeminiKey,
   logErr,
@@ -101,6 +102,14 @@ export async function POST(req: Request) {
     }
   }
 
+  // Optional pre-summarized tab stats from the client (derived via lib/profile-stats).
+  const tabSummaryRaw = form.get("tabSummary");
+  let tabSummaryText: string | undefined;
+  if (typeof tabSummaryRaw === "string" && tabSummaryRaw.length > 0 && tabSummaryRaw.length < 2000) {
+    const parsed = z.string().max(2000).safeParse(tabSummaryRaw);
+    if (parsed.success) tabSummaryText = parsed.data;
+  }
+
   const modelT0 = Date.now();
   try {
     const bytes = await file.arrayBuffer();
@@ -111,6 +120,7 @@ export async function POST(req: Request) {
       mediaType: file.type,
       userContext,
       pastVerdicts,
+      tabSummary: tabSummaryText ? { summaryText: tabSummaryText } : undefined,
     });
     logModelCall("gemini:verdict", Date.now() - modelT0, true);
 
