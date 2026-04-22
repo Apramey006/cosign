@@ -18,9 +18,13 @@ describe("ARMAAN_SYSTEM prompt", () => {
     expect(ARMAAN_SYSTEM).toMatch(/textbook|staple/i);
   });
   it("provides explicit distribution guidance away from 33/33/33", () => {
-    expect(ARMAAN_SYSTEM).toMatch(/45%|~45/);
-    expect(ARMAAN_SYSTEM).toMatch(/35%|~35/);
+    // target after eval tuning: 40% COSIGNED / 40% NOT / 20% SLEEP
+    expect(ARMAAN_SYSTEM).toMatch(/40%|~40/);
     expect(ARMAAN_SYSTEM).toMatch(/20%|~20/);
+  });
+  it("has an explicit goal-match override that protects expensive saved-for purchases", () => {
+    expect(ARMAAN_SYSTEM).toMatch(/goal.match/i);
+    expect(ARMAAN_SYSTEM).toMatch(/saving for|saved for/i);
   });
 });
 
