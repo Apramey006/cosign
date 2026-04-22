@@ -1,68 +1,114 @@
 # Deploy cosign
 
-You'll have this live at a real URL (`cosign.vercel.app` or similar) in ~5 minutes. **Free tier, no credit card needed anywhere.**
+Cosign runs on Vercel Hobby (free) + Google AI Studio (free) — no credit card required. This doc covers first deploy, post-deploy checks, and upgrade paths as usage grows.
 
-## 1. Get a Gemini API key (free, no card)
+## 1. Get a Gemini API key
 
 1. Go to https://aistudio.google.com/app/apikey
 2. Sign in with any Google account
 3. Click **Create API key**
 4. Copy the key (starts with `AIza...`)
 
-> **Free tier limits on `gemini-2.5-flash`:** 15 requests/minute, 1,500 requests/day, 1M tokens/minute. Plenty for a personal demo and small beta.
+**Free-tier limits on `gemini-2.5-flash-lite`:** 30 req/min, 1,500 req/day. Plenty for a personal demo and a small beta cohort.
 
-## 2. Deploy to Vercel
+## 2. Generate a share-signing secret
 
-### Option A — one-click (easiest)
+Share URLs are HMAC-signed so nobody can forge a fake verdict under your domain. Generate a 32-byte secret:
 
-1. Click the deploy button:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Save the output — you'll paste it into Vercel in the next step.
+
+## 3. Deploy to Vercel
+
+### Option A — one-click
+
+1. Click the deploy button below (after pushing this repo to your GitHub):
 
    [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FApramey006%2Fcosign)
 
-2. Vercel will prompt you for environment variables. Add:
-   - `GEMINI_API_KEY` — the key you copied above
+2. Vercel will prompt for environment variables. Add:
+   - `GEMINI_API_KEY` — from step 1
+   - `COSIGN_SHARE_SECRET` — the hex string from step 2
 
-3. Click **Deploy**. Takes ~60 seconds.
+3. Click **Deploy.** Takes ~60 seconds.
 
 ### Option B — CLI
 
 ```bash
 pnpm install -g vercel
-cd ~/projects/cosign
-vercel                   # follow prompts, link to your account
+cd cosign
+vercel                   # link to your project
 vercel env add GEMINI_API_KEY production
-vercel --prod            # deploy
+vercel env add COSIGN_SHARE_SECRET production
+vercel --prod
 ```
 
-## 3. (Optional) Custom domain
+## 4. (Optional) custom domain
 
-1. Buy a domain (Porkbun / Namecheap / Cloudflare — `cosign.app` is taken; try `cosign.me`, `getcosign.com`, `cosign.cool`)
-2. In Vercel project → **Settings → Domains** → add your domain
+1. Buy a domain (Porkbun / Namecheap / Cloudflare — try `cosign.me`, `getcosign.com`, `cosign.cool`)
+2. In Vercel project → **Settings → Domains** → add it
 3. Copy Vercel's DNS records to your registrar
 
-## 4. Post-deploy checklist
+## 5. Post-deploy checklist
 
-- [ ] Visit `/` — landing page renders
-- [ ] Visit `/cosign` — upload a screenshot, get a verdict
-- [ ] Click **share verdict** — copy the URL
-- [ ] Paste the URL in iMessage → you should see the OG card preview
-- [ ] Paste the same URL in Twitter / Discord → same card renders
-- [ ] In a new browser window, open the share URL — verdict renders with no auth
+- [ ] `/` landing page renders
+- [ ] `/cosign` — upload a screenshot → get a verdict
+- [ ] **Chat:** push back ("but it's a gift") → Armaan should flip
+- [ ] **Share:** click "send this to the group chat" → paste the URL in iMessage → OG preview renders
+- [ ] Open the share URL in incognito — renders, has sticky "get your own verdict" CTA
+- [ ] Tab (after 3+ verdicts): Armaan's Ledger appears at top with stats
+- [ ] Click a tab row → revisit modal opens with the old verdict + a fresh chat
+
+## Monitoring
+
+Everything logs structured JSON to Vercel's logs panel. Grep for:
+
+| Pattern | Meaning |
+|---|---|
+| `"ev":"verdict_ok"` | successful verdict (has `ms`, `verdict`, `hasCtx`) |
+| `"ev":"verdict_err"` | failed verdict (has `code`, `log`) |
+| `"ev":"chat_ok"` / `"ev":"chat_err"` | chat equivalents |
+| `"ev":"rate_limit_hit"` | abuse detection — multiple hits in a short window = investigate |
+| `"ev":"model_call"` | per-call Gemini latency (`ms`, `ok`) |
+| `"ev":"config_err"` | misconfiguration (missing env var) |
 
 ## Troubleshooting
 
-**"server misconfigured" error on verdict**
-Your `GEMINI_API_KEY` isn't set in Vercel env vars. Check **Settings → Environment Variables** in the Vercel project.
+**"server misconfigured" on verdict**
+\`GEMINI_API_KEY\` isn't set in Vercel env vars or was typo'd. Check **Settings → Environment Variables**.
+
+**Share URLs return 404 for verdicts you know are valid**
+`COSIGN_SHARE_SECRET` isn't set or got rotated. Either re-set it to the original value, or accept that pre-rotation URLs are now invalid (share URLs only live as long as the secret that signed them).
 
 **"too many verdicts right now" when you've barely used it**
-You may have hit Gemini's free tier per-minute rate limit (15 rpm). Wait 60s and try again. If it keeps happening, upgrade to paid in Google AI Studio (still dirt cheap) or swap to `gemini-2.5-flash-lite` in `src/lib/gemini.ts`.
+Gemini free-tier rate limit (30 rpm). Wait 60s. If persistent, consider enabling billing on the Google AI account for a higher cap — still dirt cheap.
 
 **OG image not showing on iMessage / Twitter**
-iMessage caches OG cards aggressively. Try a fresh URL (re-share). Twitter sometimes takes a minute to index new OG cards.
+iMessage caches aggressively. Use a fresh URL. Twitter can take a minute to index new OG cards.
 
-## Upgrade path when you outgrow this
+## Upgrade paths
 
-- **Multi-instance rate limit** — swap `lib/rate-limit.ts` for `@upstash/ratelimit` + Upstash Redis (free tier, 10k req/day)
-- **Real persistence** — add Supabase (auth + Postgres) when you want cross-device tabs. The data model is already in `lib/types.ts` (`TabEntry`)
-- **Email regret pings** — add Resend (3k emails/mo free) + a scheduled Vercel Cron to fire at 30/90/180 days after `purchased=true`
-- **Swap model for free-er tier** — `gemini-2.5-flash-lite` is 10x cheaper if you blow past the free tier
+All of these are **optional** — the app works great without them until traffic grows.
+
+### 1. Multi-instance rate limit (Upstash Redis)
+
+The current rate limit is in-memory per serverless instance. On Vercel Hobby this is effectively 1-2 instances, so the real cap per IP is 10-20 rpm. For higher-traffic deployments you'll want Upstash Redis:
+
+1. Create a free Upstash Redis database at https://upstash.com
+2. Copy `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`
+3. (Future work — currently the code uses in-memory only; stub for the swap is documented in `src/lib/rate-limit.ts`)
+
+### 2. Global daily Gemini budget cap
+
+Protects against a single adversary exhausting your daily free-tier quota via IP rotation. Same Upstash integration — tracks a key like `cosign:daily:YYYY-MM-DD`; at ~80% of free-tier cap the API starts returning 503.
+
+### 3. Persistent tabs across devices (Supabase)
+
+Current tabs are localStorage only. For users who want to sync across phone + laptop, drop in Supabase auth + a single `verdicts` table. The data model is already in `src/lib/types.ts` (`TabEntry`).
+
+### 4. Email follow-ups (Resend + Vercel Cron)
+
+The 30-day follow-up ping is currently in-app only. For users who rarely return, a Resend email saying "armaan wants to know about your [product]" would close the loop. Free tier: 3k emails/month.
