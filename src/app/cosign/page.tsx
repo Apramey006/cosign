@@ -9,6 +9,8 @@ import { TabList } from "@/components/tab-list";
 import { LoadingThoughts } from "@/components/loading-thoughts";
 import { ShareButton } from "@/components/share-button";
 import { ChatThread } from "@/components/chat-thread";
+import { ArmaanLedger } from "@/components/armaan-ledger";
+import { RevisitModal } from "@/components/revisit-modal";
 import {
   addToTab,
   loadContext,
@@ -58,6 +60,7 @@ export default function CosignPage() {
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
   const [tab, setTab] = useState<TabEntry[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [revisitId, setRevisitId] = useState<string | null>(null);
   const previewUrlsRef = useRef<Set<string>>(new Set());
 
   const trackPreview = useCallback((url: string) => {
@@ -318,15 +321,41 @@ export default function CosignPage() {
           </>
         )}
 
+        {hydrated && tab.length >= 3 && phase.kind === "idle" && !onboardingVisible && (
+          <ArmaanLedger
+            entries={tab}
+            onReviewClick={(id) => setRevisitId(id)}
+          />
+        )}
+
         {hydrated && tab.length > 0 && phase.kind !== "verdict" && (
           <section className="pt-8 border-t border-rule">
             <h2 className="font-receipt text-xs text-ink-muted uppercase tracking-widest mb-4">
               your tab · {tab.length}
             </h2>
-            <TabList entries={tab} onUpdate={handleTabUpdate} />
+            <TabList
+              entries={tab}
+              onUpdate={handleTabUpdate}
+              onOpen={(id) => setRevisitId(id)}
+            />
           </section>
         )}
       </main>
+
+      {revisitId && hydrated && (() => {
+        const revisiting = tab.find((e) => e.id === revisitId);
+        if (!revisiting) return null;
+        const others = tabEntriesToPast(tab.filter((e) => e.id !== revisitId));
+        return (
+          <RevisitModal
+            entry={revisiting}
+            userContext={context}
+            otherPastVerdicts={others}
+            onClose={() => setRevisitId(null)}
+            onUpdate={handleTabUpdate}
+          />
+        );
+      })()}
     </div>
   );
 }

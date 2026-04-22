@@ -1,15 +1,35 @@
 "use client";
 
+import { useState } from "react";
 import { VerdictStamp } from "./verdict-stamp";
 import { formatPrice } from "@/lib/utils";
+import { armaanReactionForUpdate } from "@/lib/ledger";
 import type { TabEntry } from "@/lib/types";
 
 interface TabListProps {
   entries: TabEntry[];
   onUpdate?: (id: string, patch: Partial<TabEntry>) => void;
+  onOpen?: (id: string) => void;
 }
 
-export function TabList({ entries, onUpdate }: TabListProps) {
+export function TabList({ entries, onUpdate, onOpen }: TabListProps) {
+  const [flashReactions, setFlashReactions] = useState<Record<string, string>>({});
+
+  function handleUpdate(entry: TabEntry, patch: Partial<TabEntry>) {
+    const reaction = armaanReactionForUpdate(entry, patch, entries);
+    if (reaction) {
+      setFlashReactions((prev) => ({ ...prev, [entry.id]: reaction }));
+      setTimeout(() => {
+        setFlashReactions((prev) => {
+          const rest = { ...prev };
+          delete rest[entry.id];
+          return rest;
+        });
+      }, 3600);
+    }
+    onUpdate?.(entry.id, patch);
+  }
+
   if (entries.length === 0) {
     return (
       <div className="border-2 border-dashed border-ink/20 p-8 text-center bg-paper-tint">
@@ -27,28 +47,57 @@ export function TabList({ entries, onUpdate }: TabListProps) {
     <ul className="space-y-3">
       {entries.map((entry) => {
         const controlsEnabled = Boolean(onUpdate);
+        const reaction = flashReactions[entry.id];
+        const rowOpenable = Boolean(onOpen);
         return (
           <li
             key={entry.id}
-            className="border border-ink/20 bg-paper-tint p-4 hover:border-ink transition-colors"
+            className="border border-ink/20 bg-paper-tint hover:border-ink transition-colors"
           >
-            <div className="flex items-center gap-4">
-              <VerdictStamp verdict={entry.verdict.verdict} size="sm" />
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{entry.product.name}</p>
-                <p className="text-xs text-ink-muted font-receipt mt-1">
-                  {entry.product.source ? `${entry.product.source} · ` : ""}
-                  {formatPrice(entry.product.priceCents)} ·{" "}
-                  {new Date(entry.createdAt).toLocaleDateString(undefined, {
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </p>
+            {rowOpenable ? (
+              <button
+                type="button"
+                onClick={() => onOpen?.(entry.id)}
+                className="w-full text-left flex items-center gap-4 p-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+              >
+                <VerdictStamp verdict={entry.verdict.verdict} size="sm" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{entry.product.name}</p>
+                  <p className="text-xs text-ink-muted font-receipt mt-1">
+                    {entry.product.source ? `${entry.product.source} · ` : ""}
+                    {formatPrice(entry.product.priceCents)} ·{" "}
+                    {new Date(entry.createdAt).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+                <span
+                  className="font-receipt text-xs text-ink-fade shrink-0"
+                  aria-hidden
+                >
+                  open →
+                </span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-4 p-4">
+                <VerdictStamp verdict={entry.verdict.verdict} size="sm" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{entry.product.name}</p>
+                  <p className="text-xs text-ink-muted font-receipt mt-1">
+                    {entry.product.source ? `${entry.product.source} · ` : ""}
+                    {formatPrice(entry.product.priceCents)} ·{" "}
+                    {new Date(entry.createdAt).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             {controlsEnabled && (
-              <div className="mt-3 pt-3 border-t border-ink/10 flex flex-wrap items-center gap-2">
+              <div className="px-4 pb-4 -mt-1 border-t border-ink/10 pt-3 flex flex-wrap items-center gap-2">
                 {!entry.purchased ? (
                   <>
                     <span className="font-receipt text-xs text-ink-muted uppercase tracking-widest mr-1">
@@ -56,14 +105,14 @@ export function TabList({ entries, onUpdate }: TabListProps) {
                     </span>
                     <button
                       type="button"
-                      onClick={() => onUpdate?.(entry.id, { purchased: true })}
+                      onClick={() => handleUpdate(entry, { purchased: true })}
                       className="font-receipt text-xs uppercase tracking-wider px-3 py-1.5 border border-ink/30 hover:border-ink hover:text-ink focus:outline-none focus-visible:border-ink transition-colors"
                     >
                       yeah, i bought it
                     </button>
                     <button
                       type="button"
-                      onClick={() => onUpdate?.(entry.id, { purchased: false })}
+                      onClick={() => handleUpdate(entry, { purchased: false })}
                       className="font-receipt text-xs uppercase tracking-wider text-ink-muted px-3 py-1.5 hover:text-ink focus:outline-none focus-visible:text-ink transition-colors"
                     >
                       nah
@@ -77,7 +126,7 @@ export function TabList({ entries, onUpdate }: TabListProps) {
                     <button
                       type="button"
                       aria-pressed={entry.stillGlad === true}
-                      onClick={() => onUpdate?.(entry.id, { stillGlad: true })}
+                      onClick={() => handleUpdate(entry, { stillGlad: true })}
                       className={`font-receipt text-xs uppercase tracking-wider px-3 py-1.5 border transition-colors focus:outline-none focus-visible:border-ink ${
                         entry.stillGlad === true
                           ? "border-stamp-green text-stamp-green bg-stamp-green/5"
@@ -89,7 +138,7 @@ export function TabList({ entries, onUpdate }: TabListProps) {
                     <button
                       type="button"
                       aria-pressed={entry.stillGlad === false}
-                      onClick={() => onUpdate?.(entry.id, { stillGlad: false })}
+                      onClick={() => handleUpdate(entry, { stillGlad: false })}
                       className={`font-receipt text-xs uppercase tracking-wider px-3 py-1.5 border transition-colors focus:outline-none focus-visible:border-ink ${
                         entry.stillGlad === false
                           ? "border-stamp-red text-stamp-red bg-stamp-red/5"
@@ -101,7 +150,7 @@ export function TabList({ entries, onUpdate }: TabListProps) {
                     <button
                       type="button"
                       onClick={() =>
-                        onUpdate?.(entry.id, { purchased: false, stillGlad: null })
+                        handleUpdate(entry, { purchased: false, stillGlad: null })
                       }
                       className="font-receipt text-xs uppercase tracking-wider text-ink-muted px-3 py-1.5 ml-auto hover:text-ink focus:outline-none focus-visible:text-ink transition-colors"
                     >
@@ -109,6 +158,12 @@ export function TabList({ entries, onUpdate }: TabListProps) {
                     </button>
                   </>
                 )}
+              </div>
+            )}
+
+            {reaction && (
+              <div className="px-4 pb-3 font-display italic text-base text-stamp-red animate-in fade-in duration-300">
+                › {reaction}
               </div>
             )}
           </li>
