@@ -1,5 +1,6 @@
 "use client";
 
+import { FOLLOW_UP_MS } from "./ledger";
 import type { TabEntry, UserContext } from "./types";
 
 const CTX_KEY = "cosign.context";
@@ -48,7 +49,21 @@ export function addToTab(entry: TabEntry): TabEntry[] {
 
 export function updateTabEntry(id: string, patch: Partial<TabEntry>): TabEntry[] {
   const current = loadTab();
-  const updated = current.map((e) => (e.id === id ? { ...e, ...patch } : e));
+  const updated = current.map((e) => {
+    if (e.id !== id) return e;
+    const next: TabEntry = { ...e, ...patch };
+    // When purchased becomes true, schedule a 30-day follow-up if one isn't set.
+    if (patch.purchased === true && !next.followUpAt) {
+      const createdMs = new Date(e.createdAt).getTime();
+      const anchorMs = !isNaN(createdMs) ? createdMs : Date.now();
+      next.followUpAt = new Date(anchorMs + FOLLOW_UP_MS).toISOString();
+    }
+    // When user answers stillGlad, clear the pending follow-up.
+    if (patch.stillGlad === true || patch.stillGlad === false) {
+      // Leave followUpAt as a historical timestamp; it's now satisfied.
+    }
+    return next;
+  });
   if (typeof window !== "undefined") {
     localStorage.setItem(TAB_KEY, JSON.stringify(updated));
   }
