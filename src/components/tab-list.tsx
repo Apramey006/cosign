@@ -13,8 +13,11 @@ export function TabList({ entries, onUpdate }: TabListProps) {
   if (entries.length === 0) {
     return (
       <div className="border-2 border-dashed border-ink/20 p-8 text-center bg-paper-tint">
-        <p className="font-receipt text-sm text-ink-muted">
-          no verdicts yet. upload a screenshot to start your tab.
+        <p className="font-display italic text-xl text-ink leading-none">
+          tab&apos;s empty. armaan&apos;s waiting.
+        </p>
+        <p className="font-receipt text-xs text-ink-muted mt-3">
+          every verdict ends up here. he remembers all of them.
         </p>
       </div>
     );

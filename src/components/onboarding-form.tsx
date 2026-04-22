@@ -7,9 +7,15 @@ interface OnboardingFormProps {
   initial?: UserContext | null;
   onSave: (ctx: UserContext) => void;
   onSkip?: () => void;
+  compact?: boolean;
 }
 
-export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps) {
+export function OnboardingForm({
+  initial,
+  onSave,
+  onSkip,
+  compact = false,
+}: OnboardingFormProps) {
   const [budget, setBudget] = useState(
     initial?.weeklyBudgetCents ? String(initial.weeklyBudgetCents / 100) : "",
   );
@@ -31,29 +37,31 @@ export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps)
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-paper-tint border border-ink/20 px-6 md:px-10 py-8 md:py-10 space-y-6 shadow-[2px_4px_0_rgba(28,25,23,0.12)]"
+      className="bg-paper-tint border border-ink/20 px-6 md:px-10 py-6 md:py-8 space-y-5 shadow-[2px_4px_0_rgba(28,25,23,0.12)]"
     >
       <div>
         <p className="font-receipt text-xs text-stamp-red uppercase tracking-widest mb-2">
-          tell armaan about you
+          give armaan the receipts
         </p>
-        <h2 className="font-display text-3xl md:text-4xl leading-none">
-          so he&apos;s roasting the right person
+        <h2 className="font-display text-2xl md:text-3xl leading-none">
+          he can&apos;t call u out if he doesn&apos;t know u
         </h2>
-        <p className="text-ink-muted text-sm mt-3 font-receipt">
-          all optional. saved only in your browser.
-        </p>
+        {!compact && (
+          <p className="text-ink-muted text-sm mt-3 font-receipt">
+            all optional. saved in your browser only.
+          </p>
+        )}
       </div>
 
       <div className="rule-dashed h-px" />
 
-      <div className="space-y-5">
+      <div className="space-y-4">
         <div>
           <label
             className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
             htmlFor="budget"
           >
-            weekly discretionary $
+            how much can u blow a week?
           </label>
           <input
             id="budget"
@@ -73,7 +81,7 @@ export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps)
             className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
             htmlFor="goal"
           >
-            top thing you&apos;re saving for
+            what are u actually saving for?
           </label>
           <input
             id="goal"
@@ -91,7 +99,7 @@ export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps)
             className="block font-receipt text-xs text-ink uppercase tracking-widest mb-2"
             htmlFor="regret"
           >
-            most recent purchase you regret
+            last thing u regret buying?
           </label>
           <input
             id="regret"
@@ -105,12 +113,12 @@ export function OnboardingForm({ initial, onSave, onSkip }: OnboardingFormProps)
         </div>
       </div>
 
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-3 pt-1">
         <button
           type="submit"
           className="flex-1 font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-6 py-3 hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors"
         >
-          save & continue
+          cool, roast me →
         </button>
         {onSkip && (
           <button

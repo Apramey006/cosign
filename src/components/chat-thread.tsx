@@ -16,9 +16,9 @@ interface ChatThreadProps {
 
 const STARTER_PROMPTS = [
   "but i actually need this for...",
-  "what if i wait a month?",
-  "cheaper alternatives?",
-  "why were you so harsh?",
+  "but everyone has one",
+  "show me something cheaper",
+  "be so fr rn",
 ];
 
 export function ChatThread({

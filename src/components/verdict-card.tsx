@@ -91,8 +91,8 @@ export function VerdictCard({ product, verdict, imagePreview }: VerdictCardProps
       <div className="rule-dashed h-px mt-10" />
 
       <div className="flex items-center justify-between mt-4 font-receipt text-[10px] text-ink-fade uppercase tracking-widest">
-        <span>thank u for shopping honestly</span>
-        <span>·· armaan ··</span>
+        <span>signed, armaan</span>
+        <span>don&apos;t make me say i told u so</span>
       </div>
     </div>
   );

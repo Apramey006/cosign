@@ -28,7 +28,6 @@ type Phase =
       preview: string;
       product: Product;
       verdict: VerdictResult;
-      isFirst: boolean;
     }
   | { kind: "error"; message: string; preview?: string };
 
@@ -54,6 +53,8 @@ function tabEntriesToPast(entries: TabEntry[], limit = 8): PastVerdict[] {
 export default function CosignPage() {
   const [context, setContext] = useState<UserContext | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingDismissedThisSession, setOnboardingDismissedThisSession] =
+    useState(false);
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
   const [tab, setTab] = useState<TabEntry[]>([]);
   const [hydrated, setHydrated] = useState(false);
@@ -71,9 +72,11 @@ export default function CosignPage() {
   }, []);
 
   useEffect(() => {
+    const ctx = loadContext();
+    const entries = loadTab();
     // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate localStorage after client mount
-    setContext(loadContext());
-    setTab(loadTab());
+    setContext(ctx);
+    setTab(entries);
     setHydrated(true);
   }, []);
 
@@ -95,6 +98,12 @@ export default function CosignPage() {
     saveContext(ctx);
     setContext(ctx);
     setShowOnboarding(false);
+    setOnboardingDismissedThisSession(true);
+  }, []);
+
+  const handleSkipOnboarding = useCallback(() => {
+    setShowOnboarding(false);
+    setOnboardingDismissedThisSession(true);
   }, []);
 
   const handleGetVerdict = useCallback(async () => {
@@ -119,7 +128,7 @@ export default function CosignPage() {
       if (!res.ok) {
         setPhase({
           kind: "error",
-          message: data.error || "something broke. try again.",
+          message: data.error || "gemini choked. not ur fault. try again.",
           preview,
         });
         return;
@@ -135,18 +144,17 @@ export default function CosignPage() {
       const updated = addToTab(entry);
       setTab(updated);
 
-      const isFirst = tab.length === 0;
       setPhase({
         kind: "verdict",
         preview,
         product: data.product,
         verdict: data.verdict,
-        isFirst,
       });
     } catch (err) {
       setPhase({
         kind: "error",
-        message: err instanceof Error ? err.message : "network error",
+        message:
+          err instanceof Error ? err.message : "network error. try again.",
         preview,
       });
     }
@@ -161,6 +169,16 @@ export default function CosignPage() {
     const updated = updateTabEntry(id, patch);
     setTab(updated);
   }, []);
+
+  // First-run auto-show: if hydrated, no saved context, haven't dismissed this session,
+  // and we're idle (pre-upload), show onboarding inline.
+  const autoShowOnboarding =
+    hydrated &&
+    !context &&
+    !onboardingDismissedThisSession &&
+    phase.kind === "idle";
+
+  const onboardingVisible = showOnboarding || autoShowOnboarding;
 
   return (
     <div className="flex-1 paper">
@@ -182,16 +200,17 @@ export default function CosignPage() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-6 py-12 md:py-16 space-y-10">
-        {showOnboarding && hydrated && (
+      <main className="max-w-3xl mx-auto px-6 py-10 md:py-14 space-y-8">
+        {onboardingVisible && hydrated && (
           <OnboardingForm
             initial={context}
             onSave={handleSaveContext}
-            onSkip={() => setShowOnboarding(false)}
+            onSkip={handleSkipOnboarding}
+            compact={autoShowOnboarding}
           />
         )}
 
-        {!showOnboarding && (
+        {!onboardingVisible && (
           <>
             {phase.kind === "idle" && <UploadDropzone onFile={handleFile} />}
 
@@ -199,7 +218,7 @@ export default function CosignPage() {
               <section className="space-y-6">
                 <div className="bg-paper-tint border border-ink/20 p-6 shadow-[2px_4px_0_rgba(28,25,23,0.12)]">
                   <p className="font-receipt text-xs text-stamp-red uppercase tracking-widest mb-4">
-                    step 2 · confirm
+                    ready?
                   </p>
                   <div className="flex items-start gap-4">
                     {/* eslint-disable-next-line @next/next/no-img-element -- client-side blob URL */}
@@ -209,7 +228,7 @@ export default function CosignPage() {
                       className="h-32 w-32 object-cover border-2 border-ink/20 bg-paper"
                     />
                     <div className="flex-1">
-                      <p className="text-ink font-display text-xl">ready to submit.</p>
+                      <p className="text-ink font-display text-xl">lock in?</p>
                       <p className="text-ink-muted text-sm mt-1 font-receipt">
                         {phase.file.name} ·{" "}
                         {(phase.file.size / 1024).toFixed(0)} kb
@@ -236,7 +255,9 @@ export default function CosignPage() {
               </section>
             )}
 
-            {phase.kind === "loading" && <LoadingThoughts />}
+            {phase.kind === "loading" && (
+              <LoadingThoughts userContext={context} />
+            )}
 
             {phase.kind === "verdict" && (
               <section className="space-y-6">
@@ -245,40 +266,32 @@ export default function CosignPage() {
                   verdict={phase.verdict}
                   imagePreview={phase.preview}
                 />
+
+                {/* Primary post-verdict action = SHARE (the viral loop) */}
+                <ShareButton
+                  product={phase.product}
+                  verdict={phase.verdict}
+                  variant="primary"
+                />
+
+                {/* Chat = deepening the current verdict */}
                 <ChatThread
                   product={phase.product}
                   verdict={phase.verdict}
                   userContext={context}
                   pastVerdicts={tabEntriesToPast(tab.slice(1))}
                 />
-                <div className="flex gap-3">
-                  <ShareButton product={phase.product} verdict={phase.verdict} />
+
+                {/* "ask again" is a quiet ghost link, not the loud primary */}
+                <div className="pt-2 text-center">
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="font-receipt uppercase tracking-wider text-sm text-ink-muted hover:text-ink focus:outline-none focus-visible:text-ink transition-colors underline underline-offset-4 decoration-ink/30 hover:decoration-ink"
+                  >
+                    ask armaan again →
+                  </button>
                 </div>
-                {phase.isFirst && !context && (
-                  <div className="border border-stamp-red/30 bg-stamp-red/5 p-5">
-                    <p className="font-receipt text-xs text-stamp-red uppercase tracking-widest mb-2">
-                      want sharper roasts?
-                    </p>
-                    <p className="text-ink mb-4">
-                      tell armaan a bit about you — budget, what you&apos;re
-                      saving for, recent regrets. next verdict will reference it.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setShowOnboarding(true)}
-                      className="font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-5 py-3 hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors text-sm"
-                    >
-                      set context →
-                    </button>
-                  </div>
-                )}
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="w-full font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-6 py-4 hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors"
-                >
-                  get another verdict →
-                </button>
               </section>
             )}
 
@@ -288,9 +301,11 @@ export default function CosignPage() {
                 className="border-2 border-stamp-red bg-stamp-red/5 p-6"
               >
                 <p className="font-receipt text-xs text-stamp-red uppercase tracking-widest mb-2">
-                  error
+                  armaan&apos;s glitching
                 </p>
-                <p className="text-ink mb-4">{phase.message}</p>
+                <p className="text-ink mb-4 font-display italic text-lg">
+                  {phase.message}
+                </p>
                 <button
                   type="button"
                   onClick={handleReset}
