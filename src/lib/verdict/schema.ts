@@ -48,4 +48,7 @@ export function isAllowedImageType(t: string): t is AllowedImageType {
   return (ALLOWED_IMAGE_TYPES as readonly string[]).includes(t);
 }
 
-export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+// Capped to 4MB so we stay under Vercel's ~4.5MB serverless body limit.
+// (The old 8MB cap produced raw FUNCTION_PAYLOAD_TOO_LARGE errors on the client
+// because Vercel rejected the request before it reached our handler.)
+export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
