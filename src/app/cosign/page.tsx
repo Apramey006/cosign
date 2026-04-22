@@ -11,6 +11,8 @@ import { ShareButton } from "@/components/share-button";
 import { ChatThread } from "@/components/chat-thread";
 import { ArmaanLedger } from "@/components/armaan-ledger";
 import { RevisitModal } from "@/components/revisit-modal";
+import { ProfilePanel } from "@/components/profile-panel";
+import { summarizeTab, formatTabSummaryForPrompt } from "@/lib/profile-stats";
 import {
   addToTab,
   loadContext,
@@ -121,6 +123,8 @@ export default function CosignPage() {
       if (context) form.append("context", JSON.stringify(context));
       const past = tabEntriesToPast(tab);
       if (past.length > 0) form.append("pastVerdicts", JSON.stringify(past));
+      const tabSummaryText = formatTabSummaryForPrompt(summarizeTab(tab));
+      if (tabSummaryText) form.append("tabSummary", tabSummaryText);
 
       const res = await fetch("/api/verdict", {
         method: "POST",
@@ -331,6 +335,13 @@ export default function CosignPage() {
               </div>
             )}
           </>
+        )}
+
+        {hydrated && context && phase.kind === "idle" && !onboardingVisible && (
+          <ProfilePanel
+            context={context}
+            onEdit={() => setShowOnboarding(true)}
+          />
         )}
 
         {hydrated && tab.length >= 3 && phase.kind === "idle" && !onboardingVisible && (
