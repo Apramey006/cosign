@@ -69,9 +69,6 @@ export function UploadDropzone({ onFile, disabled }: UploadDropzoneProps) {
           disabled && "opacity-50 cursor-not-allowed",
         )}
       >
-        <p className="font-receipt text-xs text-ink-muted uppercase tracking-widest mb-4">
-          step 1 · screenshot
-        </p>
         <p className="font-display text-2xl md:text-3xl mb-3 leading-none">
           drop a screenshot — or click
         </p>

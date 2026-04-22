@@ -117,20 +117,40 @@ export default async function SharedVerdictPage({ params }: { params: Params }) 
         </div>
 
         <div className="border border-ink/20 bg-paper-tint p-6 text-center">
-          <p className="text-ink mb-4">
-            your friend is using cosign to roast (or bless) their purchases
-            before the money leaves the account.
+          <p className="text-ink mb-4 font-display italic text-xl leading-tight">
+            ur friend ran this past armaan before buying.
+            <br />
+            wanna run ur next thing past him too?
           </p>
           <Link
             href="/cosign"
             className="inline-flex items-center justify-center font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-6 py-3 hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors text-sm"
           >
-            get your own verdict →
+            ask armaan →
           </Link>
         </div>
+
+        <div className="h-24" aria-hidden />
       </main>
 
-      <footer className="border-t border-rule mt-20">
+      {/* Sticky mobile bottom CTA — the primary acquisition surface when a friend shares a verdict */}
+      <div className="fixed bottom-0 inset-x-0 bg-paper-tint border-t-2 border-ink shadow-[0_-4px_12px_rgba(28,25,23,0.1)]">
+        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <p className="font-display italic text-sm md:text-base text-ink flex-1 leading-tight">
+            your friend just got roasted.
+            <br className="md:hidden" />
+            <span className="text-ink-muted"> you&apos;re next.</span>
+          </p>
+          <Link
+            href="/cosign"
+            className="shrink-0 font-receipt uppercase tracking-wider font-bold bg-ink text-paper px-5 py-3 text-sm hover:bg-stamp-red focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper transition-colors"
+          >
+            ask armaan →
+          </Link>
+        </div>
+      </div>
+
+      <footer className="border-t border-rule mt-20 pb-24">
         <div className="max-w-3xl mx-auto px-6 py-8 text-xs font-receipt text-ink-muted text-center">
           cosign · built by a broke college kid, for broke college kids
         </div>
