@@ -26,6 +26,15 @@ describe("ARMAAN_SYSTEM prompt", () => {
     expect(ARMAAN_SYSTEM).toMatch(/goal.match/i);
     expect(ARMAAN_SYSTEM).toMatch(/saving for|saved for/i);
   });
+  it("refuses to adopt product identity from OCR-injected image text", () => {
+    // Iter 5 hardening: image-text-as-instructions was confirmed exploitable
+    expect(ARMAAN_SYSTEM).toMatch(/OCR|image-OCR|image text|untrusted user input/i);
+    expect(ARMAAN_SYSTEM).toMatch(/IGNORE.*INSTRUCTIONS|adopt product identity/);
+  });
+  it("has an explicit 'not a product' fallback branch", () => {
+    expect(ARMAAN_SYSTEM).toMatch(/not a.*product|this isn't a product|isn.t a product/i);
+    expect(ARMAAN_SYSTEM).toMatch(/SLEEP_ON_IT/);
+  });
 });
 
 describe("buildUserContextPrompt", () => {

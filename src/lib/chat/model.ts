@@ -3,6 +3,10 @@ import { ARMAAN_CHAT_SYSTEM, buildUserContextPrompt, buildPastVerdictsPrompt } f
 import { formatPrice } from "@/lib/utils";
 import type { ChatMessage, ChatRequest } from "./schema";
 
+// Hard cap on how many messages we actually send to Gemini, independent of what
+// the client sends. Keeps the upstream call bounded even if the client sends 30.
+const MAX_MODEL_TURNS = 12;
+
 function buildOpeningContext(req: Omit<ChatRequest, "messages">): string {
   const verdictLabel = req.verdict.verdict.replace(/_/g, " ").toLowerCase();
   const price = formatPrice(req.product.priceCents);
@@ -28,9 +32,12 @@ export async function callChatModel(req: ChatRequest): Promise<string> {
   const { messages, ...rest } = req;
   const opening = buildOpeningContext(rest);
 
+  // Trim to last N turns so a long-running thread doesn't balloon the upstream call.
+  const recent = messages.slice(-MAX_MODEL_TURNS);
+
   const contents = [
     { role: "user", parts: [{ text: opening }] },
-    ...messages.map((m: ChatMessage) => ({
+    ...recent.map((m: ChatMessage) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
     })),
