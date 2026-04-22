@@ -63,6 +63,23 @@ body {
   mix-blend-mode: multiply;
 }
 
+/* Subtle lift-on-hover for interactive cards/rows */
+.lift-on-hover {
+  transition:
+    transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+.lift-on-hover:hover,
+.lift-on-hover:focus-within {
+  transform: translateY(-1px);
+  box-shadow: 3px 5px 0 rgba(28, 25, 23, 0.18);
+}
+
+/* Rotations that make receipts + stamps feel taped-on, not aligned */
+.tilt-left { transform: rotate(-1.2deg); }
+.tilt-right { transform: rotate(0.8deg); }
+
 .rule-dashed {
   background-image: repeating-linear-gradient(
     to right,

@@ -46,13 +46,22 @@ export function TabList({ entries, onUpdate, onOpen }: TabListProps) {
   return (
     <ul className="space-y-3">
       {entries.map((entry) => {
-        const controlsEnabled = Boolean(onUpdate);
         const reaction = flashReactions[entry.id];
         const rowOpenable = Boolean(onOpen);
+
+        // 3-state prompt logic:
+        //   never answered buy question  → show "did u buy it?"
+        //   answered "nah"               → quiet (buyAnswered=true, purchased=false)
+        //   answered "yeah" / purchased  → show still-glad prompt until resolved
+        const showBuyPrompt = !entry.purchased && !entry.buyAnswered;
+        const showStillGladPrompt =
+          entry.purchased && (entry.stillGlad === null || entry.stillGlad === undefined);
+        const promptVisible = onUpdate && (showBuyPrompt || showStillGladPrompt);
+
         return (
           <li
             key={entry.id}
-            className="border border-ink/20 bg-paper-tint hover:border-ink transition-colors"
+            className="border border-ink/20 bg-paper-tint hover:border-ink lift-on-hover"
           >
             {rowOpenable ? (
               <button
@@ -96,26 +105,30 @@ export function TabList({ entries, onUpdate, onOpen }: TabListProps) {
               </div>
             )}
 
-            {controlsEnabled && (
+            {promptVisible && (
               <div className="px-4 pb-4 -mt-1 border-t border-ink/10 pt-3 flex flex-wrap items-center gap-2">
-                {!entry.purchased ? (
+                {showBuyPrompt ? (
                   <>
                     <span className="font-receipt text-xs text-ink-muted uppercase tracking-widest mr-1">
                       did u buy it?
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleUpdate(entry, { purchased: true })}
+                      onClick={() =>
+                        handleUpdate(entry, { purchased: true, buyAnswered: true })
+                      }
                       className="font-receipt text-xs uppercase tracking-wider px-3 py-1.5 border border-ink/30 hover:border-ink hover:text-ink focus:outline-none focus-visible:border-ink transition-colors"
                     >
                       yeah, i bought it
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleUpdate(entry, { purchased: false })}
+                      onClick={() =>
+                        handleUpdate(entry, { purchased: false, buyAnswered: true })
+                      }
                       className="font-receipt text-xs uppercase tracking-wider text-ink-muted px-3 py-1.5 hover:text-ink focus:outline-none focus-visible:text-ink transition-colors"
                     >
-                      nah
+                      nah, i didn&apos;t
                     </button>
                   </>
                 ) : (
@@ -150,7 +163,11 @@ export function TabList({ entries, onUpdate, onOpen }: TabListProps) {
                     <button
                       type="button"
                       onClick={() =>
-                        handleUpdate(entry, { purchased: false, stillGlad: null })
+                        handleUpdate(entry, {
+                          purchased: false,
+                          stillGlad: null,
+                          buyAnswered: false,
+                        })
                       }
                       className="font-receipt text-xs uppercase tracking-wider text-ink-muted px-3 py-1.5 ml-auto hover:text-ink focus:outline-none focus-visible:text-ink transition-colors"
                     >
