@@ -18,7 +18,7 @@ export function UploadDropzone({ onFile, disabled }: UploadDropzoneProps) {
     if (!(ALLOWED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
       return "upload png, jpg, webp, or gif";
     }
-    if (file.size > MAX_IMAGE_BYTES) return "image must be under 8MB";
+    if (file.size > MAX_IMAGE_BYTES) return "image too big — keep it under 4mb";
     return null;
   }, []);
 
@@ -73,7 +73,7 @@ export function UploadDropzone({ onFile, disabled }: UploadDropzoneProps) {
           drop a screenshot — or click
         </p>
         <p className="font-receipt text-sm text-ink-muted max-w-md mx-auto">
-          anything: amazon, tiktok shop, depop, an ig ad. png / jpg / webp / gif · up to 8mb
+          anything: amazon, tiktok shop, depop, an ig ad. png / jpg / webp / gif · up to 4mb
         </p>
         <input
           ref={inputRef}

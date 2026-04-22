@@ -126,16 +126,28 @@ export default function CosignPage() {
         method: "POST",
         body: form,
       });
-      const data = await res.json();
 
+      // Vercel (and other proxies) can return non-JSON bodies on extreme paths
+      // like 413 / 504 / platform errors. Check ok BEFORE trying to parse JSON,
+      // so users don't see "Unexpected token 'R'" from e.g. "Request Entity Too Large".
       if (!res.ok) {
-        setPhase({
-          kind: "error",
-          message: data.error || "gemini choked. not ur fault. try again.",
-          preview,
-        });
+        let friendly = "gemini choked. not ur fault. try again.";
+        if (res.status === 413) friendly = "image too big — keep it under 4mb";
+        else if (res.status === 429)
+          friendly = "too many verdicts right now. give it a minute.";
+        else if (res.status === 504)
+          friendly = "that took too long. try again.";
+        try {
+          const maybe = await res.clone().json();
+          if (maybe?.error && typeof maybe.error === "string") friendly = maybe.error;
+        } catch {
+          // non-JSON body — keep the friendly default
+        }
+        setPhase({ kind: "error", message: friendly, preview });
         return;
       }
+
+      const data = await res.json();
 
       const entry: TabEntry = {
         id: crypto.randomUUID(),

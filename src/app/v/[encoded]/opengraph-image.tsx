@@ -55,9 +55,19 @@ export default async function Image({ params }: { params: Promise<{ encoded: str
 
   const { p: product, v: verdict } = payload;
   const stamp = STAMP[verdict.verdict];
+
+  // Grapheme-count truncation — `.length` counts UTF-16 code units, so
+  // multi-byte emoji / CJK / combining marks overflow the pixel budget at the
+  // same "character count." Array.from(...) gives grapheme clusters.
+  const truncate = (s: string, max: number): string => {
+    const graphemes = Array.from(s);
+    if (graphemes.length <= max) return s;
+    return graphemes.slice(0, max).join("") + "...";
+  };
+
   const priceLine = `${product.source ? `${product.source} · ` : ""}${formatPriceCents(product.priceCents)}`;
-  const productName = product.name.length > 48 ? product.name.slice(0, 48) + "..." : product.name;
-  const headline = verdict.headline.length > 120 ? verdict.headline.slice(0, 120) + "..." : verdict.headline;
+  const productName = truncate(product.name, 42);
+  const headline = truncate(verdict.headline, 90);
 
   return new ImageResponse(
     (
@@ -158,6 +168,9 @@ export default async function Image({ params }: { params: Promise<{ encoded: str
                 marginTop: 6,
                 letterSpacing: "-0.015em",
                 lineHeight: 1,
+                overflow: "hidden",
+                maxWidth: "100%",
+                wordBreak: "break-word",
               }}
             >
               {productName}
@@ -171,6 +184,9 @@ export default async function Image({ params }: { params: Promise<{ encoded: str
                 marginTop: 22,
                 color: INK,
                 lineHeight: 1.1,
+                overflow: "hidden",
+                maxWidth: "100%",
+                wordBreak: "break-word",
               }}
             >
               {headline}

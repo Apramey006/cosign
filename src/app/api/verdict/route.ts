@@ -11,13 +11,34 @@ import {
 import { callVerdictModel } from "@/lib/verdict/model";
 import { toVerdictError } from "@/lib/verdict/errors";
 import { checkRateLimit, clientKeyFromRequest } from "@/lib/rate-limit";
+import {
+  assertGeminiKey,
+  logErr,
+  logModelCall,
+  logOk,
+  logRateLimit,
+} from "@/lib/obs";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const rate = checkRateLimit(clientKeyFromRequest(req));
+  const t0 = Date.now();
+
+  // Fail fast on misconfig with a distinct error code (not "UNKNOWN").
+  const configErr = assertGeminiKey();
+  if (configErr) {
+    logErr("config_err", configErr, { path: "/api/verdict" });
+    return NextResponse.json(
+      { error: "server misconfigured. try again later." },
+      { status: 503 },
+    );
+  }
+
+  const clientKey = clientKeyFromRequest(req);
+  const rate = checkRateLimit(clientKey);
   if (!rate.ok) {
+    logRateLimit("/api/verdict", clientKey);
     return NextResponse.json(
       { error: "too many verdicts right now. give it a minute." },
       {
@@ -48,7 +69,10 @@ export async function POST(req: Request) {
   }
 
   if (file.size > MAX_IMAGE_BYTES) {
-    return NextResponse.json({ error: "image must be under 8MB" }, { status: 413 });
+    return NextResponse.json(
+      { error: "image too big — keep it under 4mb" },
+      { status: 413 },
+    );
   }
 
   let userContext = null;
@@ -77,6 +101,7 @@ export async function POST(req: Request) {
     }
   }
 
+  const modelT0 = Date.now();
   try {
     const bytes = await file.arrayBuffer();
     const base64 = Buffer.from(bytes).toString("base64");
@@ -87,8 +112,15 @@ export async function POST(req: Request) {
       userContext,
       pastVerdicts,
     });
+    logModelCall("gemini:verdict", Date.now() - modelT0, true);
 
     const { product, verdict, headline, reasons, roast } = result;
+    logOk("verdict_ok", {
+      ms: Date.now() - t0,
+      verdict,
+      hasCtx: Boolean(userContext),
+      pastCount: pastVerdicts.length,
+    });
     return NextResponse.json(
       {
         product,
@@ -107,8 +139,12 @@ export async function POST(req: Request) {
       },
     );
   } catch (err) {
+    logModelCall("gemini:verdict", Date.now() - modelT0, false);
     const ve = toVerdictError(err);
-    console.error(`[verdict] ${ve.code}: ${ve.logMessage}`);
+    logErr("verdict_err", ve.code, {
+      ms: Date.now() - t0,
+      log: ve.logMessage,
+    });
     return NextResponse.json({ error: ve.userMessage }, { status: ve.status });
   }
 }
